@@ -1,0 +1,64 @@
+date,username,product,sku,model,quantity,unit_type,applied_cost_per_quantity,gross_amount,discount_amount,net_amount,exceeds_quota,total_monthly_quota,organization,cost_center_name,aic_quantity,aic_gross_amount
+2026-09-01,dev-001,copilot,copilot_ai_credits,"gpt-5.6-luna, long context",2661,AI Credits,0.01,26.61,0.00,26.61,true,1900,acme-eng,platform,2661,26.61
+2026-09-01,dev-003,copilot,copilot_ai_credits,gpt-5.4-nano,1184,AI Credits,0.01,11.84,0.00,11.84,false,1900,acme-eng,platform,1184,11.84
+2026-09-01,dev-006,copilot,copilot_ai_credits,gpt-5.4-nano,397,AI Credits,0.01,3.97,0.00,3.97,false,1900,acme-eng,platform,397,3.97
+2026-09-01,dev-007,copilot,copilot_ai_credits,gemini-3-flash,538,AI Credits,0.01,5.38,0.00,5.38,false,1900,acme-eng,,538,5.38
+2026-09-01,dev-010,copilot,copilot_ai_credits,gemini-3-flash,247,AI Credits,0.01,2.47,0.00,2.47,false,1900,acme-eng,platform,247,2.47
+2026-09-01,dev-012,copilot,copilot_ai_credits,claude-sonnet-5,375,AI Credits,0.01,3.75,0.00,3.75,false,1900,acme-eng,platform,375,3.75
+2026-09-01,dev-015,copilot,copilot_ai_credits,claude-fable-5,192,AI Credits,0.01,1.92,0.00,1.92,false,1900,acme-eng,platform,192,1.92
+2026-09-01,dev-023,copilot,copilot_ai_credits,,0,AI Credits,0.01,0.00,0.00,0.00,false,1900,acme-eng,platform,0,0.00
+2026-09-01,dev-024,copilot,copilot_ai_credits,,0,AI Credits,0.01,0.00,0.00,0.00,false,1900,acme-eng,platform,0,0.00
+2026-09-01,dev-025,copilot,copilot_ai_credits,,0,AI Credits,0.01,0.00,0.00,0.00,false,1900,acme-eng,platform,0,0.00
+2026-09-02,dev-002,copilot,copilot_ai_credits,claude-fable-5,1791,AI Credits,0.01,17.91,0.00,17.91,false,1900,acme-eng,platform,1791,17.91
+2026-09-02,dev-004,copilot,copilot_ai_credits,gpt-5.6-luna,325,AI Credits,0.01,3.25,0.00,3.25,false,1900,acme-eng,platform,325,3.25
+2026-09-02,dev-007,copilot,copilot_ai_credits,gemini-3-flash,839,AI Credits,0.01,8.39,0.00,8.39,false,1900,acme-eng,,839,8.39
+2026-09-02,dev-008,copilot,copilot_ai_credits,gpt-5.4-nano,699,AI Credits,0.01,6.99,0.00,6.99,false,1900,acme-eng,platform,699,6.99
+2026-09-02,dev-010,copilot,copilot_ai_credits,gemini-3-flash,729,AI Credits,0.01,7.29,0.00,7.29,false,1900,acme-eng,platform,729,7.29
+2026-09-02,dev-012,copilot,copilot_ai_credits,claude-fable-5,161,AI Credits,0.01,1.61,0.00,1.61,false,1900,acme-eng,platform,161,1.61
+2026-09-02,dev-014,copilot,copilot_ai_credits,claude-fable-5,360,AI Credits,0.01,3.60,0.00,3.60,false,1900,acme-eng,platform,360,3.60
+2026-09-02,dev-017,copilot,copilot_ai_credits,claude-fable-5,147,AI Credits,0.01,1.47,0.00,1.47,false,1900,acme-eng,platform,147,1.47
+2026-09-02,dev-018,copilot,copilot_ai_credits,gemini-3-flash,140,AI Credits,0.01,1.40,0.00,1.40,false,1900,acme-eng,platform,140,1.40
+2026-09-02,dev-019,copilot,copilot_ai_credits,claude-fable-5,43,AI Credits,0.01,0.43,0.00,0.43,false,1900,acme-eng,platform,43,0.43
+2026-09-02,dev-021,copilot,copilot_ai_credits,claude-sonnet-5,130,AI Credits,0.01,1.30,0.00,1.30,false,1900,acme-eng,platform,130,1.30
+2026-09-03,dev-004,copilot,copilot_ai_credits,gemini-3-flash,286,AI Credits,0.01,2.86,0.00,2.86,false,1900,acme-eng,platform,286,2.86
+2026-09-03,dev-005,copilot,copilot_ai_credits,claude-sonnet-5,477,AI Credits,0.01,4.77,0.00,4.77,false,1900,acme-eng,platform,477,4.77
+2026-09-03,dev-009,copilot,copilot_ai_credits,gemini-3-flash,330,AI Credits,0.01,3.30,0.00,3.30,false,1900,acme-eng,platform,330,3.30
+2026-09-03,dev-016,copilot,copilot_ai_credits,claude-fable-5,32,AI Credits,0.01,0.32,0.00,0.32,false,1900,acme-eng,platform,32,0.32
+2026-09-03,dev-017,copilot,copilot_ai_credits,claude-sonnet-5,43,AI Credits,0.01,0.43,0.00,0.43,false,1900,acme-eng,platform,43,0.43
+2026-09-03,dev-018,copilot,copilot_ai_credits,gemini-3-flash,53,AI Credits,0.01,0.53,0.00,0.53,false,1900,acme-eng,platform,53,0.53
+2026-09-03,dev-019,copilot,copilot_ai_credits,claude-fable-5,28,AI Credits,0.01,0.28,0.00,0.28,false,1900,acme-eng,platform,28,0.28
+2026-09-03,dev-021,copilot,copilot_ai_credits,gpt-5.6-luna,118,AI Credits,0.01,1.18,0.00,1.18,false,1900,acme-eng,platform,118,1.18
+2026-09-03,dev-022,copilot,copilot_ai_credits,gpt-5.6-luna,67,AI Credits,0.01,0.67,0.00,0.67,false,1900,acme-eng,platform,67,0.67
+2026-09-04,dev-002,copilot,copilot_ai_credits,gpt-5.6-luna,621,AI Credits,0.01,6.21,0.00,6.21,true,1900,acme-eng,platform,621,6.21
+2026-09-04,dev-004,copilot,copilot_premium_request,claude-sonnet-5,18,requests,0.04,0.72,0.00,0.72,false,1900,acme-eng,platform,,
+2026-09-04,dev-012,copilot,copilot_ai_credits,gpt-5.6-luna,165,AI Credits,0.01,1.65,0.00,1.65,false,1900,acme-eng,developer-experience,165,1.65
+2026-09-04,dev-013,copilot,copilot_ai_credits,gpt-5.6-luna,608,AI Credits,0.01,6.08,0.00,6.08,false,1900,acme-eng,platform,608,6.08
+2026-09-04,dev-014,copilot,copilot_ai_credits,gpt-5.4-nano,741,AI Credits,0.01,7.41,0.00,7.41,false,1900,acme-eng,platform,741,7.41
+2026-09-04,dev-015,copilot,copilot_ai_credits,gpt-5.6-luna,221,AI Credits,0.01,2.21,0.00,2.21,false,1900,acme-eng,platform,221,2.21
+2026-09-04,dev-016,copilot,copilot_ai_credits,claude-fable-5,32,AI Credits,0.01,0.32,0.00,0.32,false,1900,acme-eng,platform,32,0.32
+2026-09-04,dev-019,copilot,copilot_ai_credits,gpt-5.6-luna,13,AI Credits,0.01,0.13,0.00,0.13,false,1900,acme-eng,developer-experience,13,0.13
+2026-09-04,dev-020,copilot,copilot_ai_credits,claude-fable-5,30,AI Credits,0.01,0.30,0.00,0.30,false,1900,acme-eng,platform,30,0.30
+2026-09-04,dev-022,copilot,copilot_ai_credits,gpt-5.6-luna,108,AI Credits,0.01,1.08,0.00,1.08,false,1900,acme-eng,platform,108,1.08
+2026-09-05,dev-001,copilot,copilot_ai_credits,claude-fable-5,2739,AI Credits,0.01,27.39,0.00,27.39,true,1900,acme-eng,platform,2739,27.39
+2026-09-05,dev-002,copilot,copilot_ai_credits,claude-sonnet-5,1688,AI Credits,0.01,16.88,0.00,16.88,true,1900,acme-eng,developer-experience,1688,16.88
+2026-09-05,dev-003,copilot,copilot_ai_credits,gemini-3-flash,1266,AI Credits,0.01,12.66,0.00,12.66,true,1900,acme-eng,platform,1266,12.66
+2026-09-05,dev-004,copilot,copilot_ai_credits,gemini-3-flash,157,AI Credits,0.01,1.57,0.00,1.57,false,1900,acme-eng,developer-experience,157,1.57
+2026-09-05,dev-006,copilot,copilot_ai_credits,gpt-5.6-luna,247,AI Credits,0.01,2.47,0.00,2.47,false,1900,acme-eng,platform,247,2.47
+2026-09-05,dev-008,copilot,copilot_ai_credits,gpt-5.4-nano,747,AI Credits,0.01,7.47,0.00,7.47,false,1900,acme-eng,platform,747,7.47
+2026-09-05,dev-009,actions,actions_linux,,1200,minutes,0.008,9.60,0.00,9.60,false,,acme-eng,platform,,
+2026-09-05,dev-011,copilot,copilot_ai_credits,claude-fable-5,294,AI Credits,0.01,2.94,0.00,2.94,false,1900,acme-eng,platform,294,2.94
+2026-09-05,dev-012,copilot,copilot_ai_credits,claude-sonnet-5,319,AI Credits,0.01,3.19,0.00,3.19,false,1900,acme-eng,platform,319,3.19
+2026-09-05,dev-012,copilot,copilot_ai_credits,gemini-3-flash,140,AI Credits,0.01,1.40,0.40,1.00,false,1900,acme-eng,"Platform, EU",140,1.40
+2026-09-05,dev-013,copilot,copilot_ai_credits,gpt-5.6-luna,767,AI Credits,0.01,7.67,0.00,7.67,false,1900,acme-eng,platform,767,7.67
+2026-09-05,dev-015,copilot,copilot_ai_credits,claude-fable-5,281,AI Credits,0.01,2.81,0.00,2.81,false,1900,acme-eng,developer-experience,281,2.81
+2026-09-05,dev-016,copilot,copilot_ai_credits,claude-sonnet-5,50,AI Credits,0.01,0.50,0.00,0.50,false,1900,acme-eng,developer-experience,50,0.50
+2026-09-05,dev-018,copilot,copilot_ai_credits,gpt-5.6-luna,18,AI Credits,0.01,0.18,0.00,0.18,false,1900,acme-eng,developer-experience,18,0.18
+2026-09-05,dev-019,copilot,copilot_ai_credits,claude-sonnet-5,31,AI Credits,0.01,0.31,0.00,0.31,false,1900,acme-eng,platform,31,0.31
+2026-09-05,dev-020,copilot,copilot_ai_credits,claude-fable-5,38,AI Credits,0.01,0.38,0.00,0.38,false,1900,acme-eng,platform,38,0.38
+2026-09-06,dev-004,copilot,copilot_ai_credits,claude-fable-5,195,AI Credits,0.01,1.95,0.00,1.95,false,1900,acme-eng,platform,195,1.95
+2026-09-06,dev-005,copilot,copilot_ai_credits,claude-fable-5,909,AI Credits,0.01,9.09,0.00,9.09,false,1900,acme-eng,platform,909,9.09
+2026-09-06,dev-006,copilot,copilot_ai_credits,gpt-5.6-luna,429,AI Credits,0.01,4.29,0.00,4.29,false,1900,acme-eng,developer-experience,429,4.29
+2026-09-06,dev-009,copilot,copilot_ai_credits,gpt-5.6-luna,969,AI Credits,0.01,9.69,0.00,9.69,false,1900,acme-eng,platform,969,9.69
+2026-09-06,dev-011,copilot,copilot_ai_credits,claude-sonnet-5,668,AI Credits,0.01,6.68,0.00,6.68,false,1900,acme-eng,platform,668,6.68
+2026-09-06,dev-017,copilot,copilot_ai_credits,claude-sonnet-5,92,AI Credits,0.01,0.92,0.00,0.92,false,1900,acme-eng,developer-experience,92,0.92
+2026-09-06,dev-018,copilot,copilot_ai_credits,gpt-5.6-luna,52,AI Credits,0.01,0.52,0.00,0.52,false,1900,acme-eng,platform,52,0.52
