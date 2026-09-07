@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copilot billing report</title>
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --border:#e4e4e1; --border-strong:#c9c9c4;
+  --ink:#1c1c1a; --ink-2:#55554f; --ink-3:#84847c;
+  --mark:#2f6f6a; --mark-soft:#d5e6e4; --track:#eeeeeb;
+  --warn:#8a5a00; --warn-soft:#f6ead2;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#161614; --surface:#1e1e1c; --border:#33332f; --border-strong:#4a4a44;
+  --ink:#f0efe9; --ink-2:#b4b4ac; --ink-3:#84847c;
+  --mark:#6fbfb6; --mark-soft:#24403d; --track:#2a2a26;
+  --warn:#e0b063; --warn-soft:#3a2f18;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--sans);
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+h1{font-size:1.5rem;margin:0 0 .35rem;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:2.5rem 0 .85rem;letter-spacing:-.005em}
+h2:first-of-type{margin-top:2rem}
+.sub{color:var(--ink-2);margin:0 0 2rem;max-width:44rem}
+.note{color:var(--ink-3);font-size:.83rem}
+code{font-family:var(--mono);font-size:.88em;background:var(--track);
+  padding:.1em .35em;border-radius:3px}
+
+/* ---- intake ---------------------------------------------------------- */
+#drop{border:1.5px dashed var(--border-strong);border-radius:10px;background:var(--surface);
+  padding:2.25rem 1.5rem;text-align:center;transition:border-color .12s,background .12s}
+#drop.over{border-color:var(--mark);background:var(--mark-soft)}
+#drop p{margin:0 0 1rem;color:var(--ink-2)}
+button{font:inherit;font-size:.9rem;padding:.5rem .95rem;border-radius:7px;
+  border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);
+  cursor:pointer}
+button:hover{border-color:var(--mark);color:var(--mark)}
+button.primary{background:var(--mark);border-color:var(--mark);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) button.primary{color:#10201e}}
+button.primary:hover{opacity:.9;color:#fff}
+.actions{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+
+/* ---- stat tiles ------------------------------------------------------ */
+.tiles{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:1rem 1.1rem}
+.tile .k{font-size:.76rem;color:var(--ink-3);letter-spacing:.02em;margin-bottom:.3rem}
+.tile .v{font-family:var(--mono);font-size:1.35rem;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.tile .v small{font-size:.6em;color:var(--ink-3);letter-spacing:0}
+
+/* ---- meters ---------------------------------------------------------- */
+.meter{margin:.9rem 0 1.3rem}
+.meter .lab{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem;
+  margin-bottom:.4rem}
+.meter .lab b{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums}
+.track{height:10px;background:var(--track);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--mark);border-radius:4px;min-width:2px}
+
+/* ---- bars ------------------------------------------------------------ */
+table.bars{width:100%;border-collapse:separate;border-spacing:0 2px}
+table.bars td{padding:0;vertical-align:middle}
+table.bars td.name{width:14rem;padding-right:.75rem;font-size:.86rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.bars td.plot{width:auto}
+table.bars td.val{width:8rem;text-align:right;padding-left:.75rem;font-family:var(--mono);
+  font-size:.83rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.bar{height:14px;background:var(--mark);border-radius:0 4px 4px 0;min-width:2px}
+tr.over .bar{background:var(--warn)}
+tr:hover td{background:var(--track)}
+
+/* ---- flag ------------------------------------------------------------ */
+.flag{display:inline-flex;align-items:center;gap:.4rem;background:var(--warn-soft);
+  color:var(--warn);border-radius:6px;padding:.15rem .5rem;font-size:.8rem}
+.callout{border:1px solid var(--border);border-left:3px solid var(--mark);
+  background:var(--surface);border-radius:0 8px 8px 0;padding:1rem 1.15rem;margin:1.25rem 0}
+.callout.warn{border-left-color:var(--warn)}
+.callout p{margin:0 0 .5rem}.callout p:last-child{margin:0}
+
+/* ---- misc ------------------------------------------------------------ */
+table.data{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem}
+table.data th,table.data td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid var(--border)}
+table.data th{color:var(--ink-3);font-weight:500;font-size:.78rem}
+table.data td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+details{margin-top:.6rem}summary{cursor:pointer;font-size:.86rem;color:var(--ink-2)}
+[hidden]{display:none!important}
+.err{border-left-color:var(--warn)}
+footer{margin-top:4rem;padding-top:1.25rem;border-top:1px solid var(--border);
+  color:var(--ink-3);font-size:.82rem}
+a{color:var(--mark);text-decoration:underline;text-underline-offset:.18em}
+a:hover{color:var(--ink)}
+a:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Copilot billing report</h1>
+<p class="sub">Reads a GitHub Copilot billing usage CSV and shows how consumption is
+distributed across users, how much of the monthly quota is drawn, and who is over.
+The file is parsed in this page. Nothing is uploaded and this page makes no network
+requests of any kind.</p>
+
+<div id="drop">
+  <p>Drop the CSV here, or</p>
+  <div class="actions">
+    <button class="primary" id="pick">Choose a file</button>
+    <button id="demo">Use synthetic data</button>
+  </div>
+  <input type="file" id="file" accept=".csv,text/csv" hidden>
+</div>
+
+<div id="problem" hidden></div>
+<div id="report" hidden></div>
+
+<footer>
+  <p><strong>Where the CSV comes from.</strong> An organization owner or billing
+  manager can download it from GitHub: Settings &rarr; Billing &amp; licensing &rarr;
+  Usage, then request a usage report. No token is required.</p>
+  <p>Expected columns: <code>date</code>, <code>username</code>, <code>product</code>,
+  <code>sku</code>, <code>model</code>, <code>quantity</code>, <code>unit_type</code>,
+  <code>applied_cost_per_quantity</code>, <code>gross_amount</code>,
+  <code>discount_amount</code>, <code>net_amount</code>, <code>exceeds_quota</code>,
+  <code>total_monthly_quota</code>, <code>organization</code>,
+  <code>cost_center_name</code>, <code>aic_quantity</code>,
+  <code>aic_gross_amount</code>. Columns are matched by header name; unexpected
+  columns are ignored and missing ones are reported.</p>
+  <p><strong>Hosted or local, your choice.</strong> This page is served from
+  GitHub Pages, directly out of the public repository — the source it runs is the
+  source you can read at
+  <a href="https://github.com/OpticNerveAI/spillwayops-tools" rel="noopener">github.com/OpticNerveAI/spillwayops-tools</a>.
+  You can also save this file and open it from your own disk; it behaves identically
+  offline, and a copy you have read cannot change under you.</p>
+
+  <p>MIT licensed. Copyright &copy; 2026 Optic Nerve AI, LLC &middot;
+  <a href="https://www.spillwayops.com" rel="noopener">www.spillwayops.com</a></p>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toLocaleString("en-US")};
+var pct=function(n){return (n*100).toFixed(1)+" %"};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})};
+
+/* ---- CSV parse (RFC4180: quoted fields, embedded commas, "" escapes) --- */
+function parseCSV(text){
+  text=text.replace(/^﻿/,"");
+  var rows=[],row=[],f="",q=false,i=0,c,n;
+  for(;i<text.length;i++){
+    c=text[i];
+    if(q){
+      if(c==='"'){ n=text[i+1]; if(n==='"'){f+='"';i++} else {q=false} }
+      else f+=c;
+    } else if(c==='"'){ q=true }
+    else if(c===","){ row.push(f); f="" }
+    else if(c==="\n"||c==="\r"){
+      if(c==="\r"&&text[i+1]==="\n")i++;
+      row.push(f); f="";
+      if(row.length>1||row[0]!=="")rows.push(row);
+      row=[];
+    } else f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+
+var REQUIRED=["username","quantity","unit_type"];
+var USEFUL=["date","product","model","exceeds_quota","total_monthly_quota",
+            "aic_quantity","net_amount","organization","cost_center_name"];
+
+function analyse(rows){
+  if(rows.length<2) throw new Error("The file has no data rows.");
+  var head=rows[0].map(function(h){return h.trim().toLowerCase()});
+  var idx={}; head.forEach(function(h,i){idx[h]=i});
+  var missingReq=REQUIRED.filter(function(c){return !(c in idx)});
+  if(missingReq.length)
+    throw new Error("Missing required column"+(missingReq.length>1?"s":"")+": "+
+      missingReq.join(", ")+". Found: "+head.join(", "));
+  var missingUseful=USEFUL.filter(function(c){return !(c in idx)});
+
+  var get=function(r,c){var i=idx[c];return i===undefined?"":(r[i]||"").trim()};
+  var num=function(v){var n=parseFloat(String(v).replace(/[^0-9.\-]/g,""));return isFinite(n)?n:0};
+
+  var users={},models={},dates=[],skipped=0,rowsUsed=0;
+  for(var r=1;r<rows.length;r++){
+    var row=rows[r];
+    if(!row||row.length<2)continue;
+    var prod=get(row,"product").toLowerCase();
+    if("product" in idx && prod && prod.indexOf("copilot")===-1){skipped++;continue}
+    var u=get(row,"username"); if(!u){skipped++;continue}
+
+    /* credits: prefer the explicit AI-credit column; else quantity when the row
+       is already denominated in credits. Request-denominated rows are counted
+       separately and never silently added to a credit total. */
+    var unit=get(row,"unit_type").toLowerCase();
+    var credits=0,requests=0;
+    var aic=("aic_quantity" in idx)?num(get(row,"aic_quantity")):NaN;
+    if("aic_quantity" in idx && get(row,"aic_quantity")!==""){credits=aic}
+    else if(unit.indexOf("credit")!==-1){credits=num(get(row,"quantity"))}
+    else {requests=num(get(row,"quantity"))}
+
+    var uu=users[u]||(users[u]={user:u,credits:0,requests:0,quota:0,over:false,cost:0});
+    uu.credits+=credits; uu.requests+=requests;
+    uu.cost+=num(get(row,"net_amount"));
+    var q=num(get(row,"total_monthly_quota")); if(q>uu.quota)uu.quota=q;
+    if(get(row,"exceeds_quota").toLowerCase()==="true")uu.over=true;
+
+    var m=get(row,"model")||"(unspecified)";
+    models[m]=(models[m]||0)+credits;
+    var d=get(row,"date"); if(d)dates.push(d);
+    rowsUsed++;
+  }
+
+  var list=Object.keys(users).map(function(k){return users[k]});
+  if(!list.length) throw new Error("No Copilot rows found in this file.");
+  list.sort(function(a,b){return b.credits-a.credits});
+
+  var consumed=list.reduce(function(s,u){return s+u.credits},0);
+  var quotas=list.filter(function(u){return u.quota>0});
+  var pool=quotas.reduce(function(s,u){return s+u.quota},0);
+  var quotaKnown=quotas.length>0;
+
+  /* concentration */
+  var share=function(frac){
+    var n=Math.max(1,Math.ceil(list.length*frac));
+    var s=list.slice(0,n).reduce(function(a,u){return a+u.credits},0);
+    return consumed>0?s/consumed:0;
+  };
+  var mid=list.map(function(u){return u.credits}).sort(function(a,b){return a-b});
+  var median=mid.length?(mid.length%2?mid[(mid.length-1)/2]
+             :(mid[mid.length/2-1]+mid[mid.length/2])/2):0;
+
+  var over=list.filter(function(u){return u.over||(u.quota>0&&u.credits>u.quota)});
+  var excess=over.reduce(function(s,u){return s+(u.quota>0?Math.max(0,u.credits-u.quota):0)},0);
+
+  dates.sort();
+  return {
+    users:list, consumed:consumed, pool:pool, quotaKnown:quotaKnown,
+    unused:Math.max(0,pool-consumed),
+    util:pool>0?consumed/pool:0,
+    top10:share(0.10), top20:share(0.20),
+    median:median, heaviest:list[0]?list[0].credits:0,
+    zero:list.filter(function(u){return u.credits===0}).length,
+    over:over, excess:excess,
+    models:Object.keys(models).map(function(k){return{name:k,credits:models[k]}})
+             .filter(function(m){return m.credits>0})
+             .sort(function(a,b){return b.credits-a.credits}),
+    requests:list.reduce(function(s,u){return s+u.requests},0),
+    cost:list.reduce(function(s,u){return s+u.cost},0),
+    from:dates[0]||"", to:dates[dates.length-1]||"",
+    rowsUsed:rowsUsed, skipped:skipped, missingUseful:missingUseful
+  };
+}
+
+/* ---- render ---------------------------------------------------------- */
+function meter(label,value,frac){
+  return '<div class="meter"><div class="lab"><span>'+esc(label)+
+    '</span><b>'+esc(value)+'</b></div><div class="track"><div class="fill" style="width:'+
+    (Math.max(0,Math.min(1,frac))*100).toFixed(1)+'%"></div></div></div>';
+}
+function bars(items,max,fmtv,flag){
+  var h='<table class="bars">';
+  items.forEach(function(it){
+    var isFlagged=flag&&flag(it);
+    h+='<tr'+(isFlagged?' class="over"':'')+'><td class="name" title="'+esc(it.name)+
+      (isFlagged?' — over quota':'')+'">'+(isFlagged?'<span aria-label="over quota">\u26a0</span> ':'')+
+      esc(it.name)+'</td><td class="plot"><div class="bar" style="width:'+
+      (max>0?Math.max(0.5,it.v/max*100):0).toFixed(1)+'%"></div></td>'+
+      '<td class="val">'+esc(fmtv(it))+'</td></tr>';
+  });
+  return h+'</table>';
+}
+
+function render(a,demo){
+  var h="";
+  if(demo) h+='<div class="callout"><p><strong>Synthetic data.</strong> These figures '+
+    'are invented to show the report\'s shape. No file was read.</p></div>';
+
+  h+='<h2>Summary</h2><div class="tiles">'+
+    tile("Users",fmt(a.users.length))+
+    tile("Credits consumed",fmt(a.consumed))+
+    (a.quotaKnown?tile("Monthly quota",fmt(a.pool)):"")+
+    (a.quotaKnown?tile("Quota utilization",pct(a.util)):"")+
+    (a.quotaKnown?tile("Unused quota",fmt(a.unused)):"")+
+    (a.cost?tile("Net amount","$"+a.cost.toFixed(2)):"")+
+    (a.requests?tile("Request-metered units",fmt(a.requests)):"")+
+  '</div>';
+  if(a.from) h+='<p class="note" style="margin-top:.7rem">Covering '+esc(a.from)+
+    ' to '+esc(a.to)+' &middot; '+fmt(a.rowsUsed)+' rows read'+
+    (a.skipped?', '+fmt(a.skipped)+' non-Copilot or unattributed rows skipped':'')+'.</p>';
+
+  if(!a.quotaKnown) h+='<div class="callout warn"><p><strong>No quota column with '+
+    'values.</strong> <code>total_monthly_quota</code> was absent or empty, so quota '+
+    'utilization and unused capacity cannot be computed from this file. Consumption '+
+    'and distribution below are unaffected.</p></div>';
+
+  h+='<h2>Concentration</h2>';
+  if(a.quotaKnown) h+=meter("Quota consumed",pct(a.util)+" of "+fmt(a.pool),a.util);
+  h+=meter("Share drawn by the heaviest 10% of users",pct(a.top10),a.top10);
+  h+=meter("Share drawn by the heaviest 20% of users",pct(a.top20),a.top20);
+  h+='<div class="tiles">'+
+    tile("Median user",fmt(a.median),"credits")+
+    tile("Heaviest user",fmt(a.heaviest),"credits")+
+    tile("Users with zero usage",fmt(a.zero))+
+  '</div>';
+
+  if(a.over.length){
+    h+='<h2>Over quota</h2><div class="callout warn"><p><span class="flag">'+
+      '⚠ Over quota</span> '+fmt(a.over.length)+' user'+(a.over.length>1?'s':'')+
+      ' drew more than the monthly quota recorded for them'+
+      (a.excess>0?', by '+fmt(a.excess)+' credits in total':'')+'.'+
+      (a.quotaKnown&&a.unused>0?' In the same period '+fmt(a.unused)+
+      ' credits of quota went undrawn.':'')+'</p></div>';
+  }
+
+  h+='<h2>Consumption by user</h2>';
+  var top=a.users.slice(0,25);
+  h+=bars(top.map(function(u){return{name:u.user,v:u.credits,u:u}}),a.users[0].credits,
+    function(it){return fmt(it.v)+(it.u.quota?" / "+fmt(it.u.quota):"")},
+    function(it){return it.u.over||(it.u.quota>0&&it.u.credits>it.u.quota)});
+  if(a.users.length>25) h+='<p class="note">Showing the 25 heaviest of '+
+    fmt(a.users.length)+' users. \u26a0 marks a user over the monthly quota recorded '+
+    'for them. All users are listed in the table below.</p>';
+
+  if(a.models.length>1){
+    h+='<h2>Credits by model</h2>';
+    h+=bars(a.models.slice(0,12).map(function(m){return{name:m.name,v:m.credits}}),
+      a.models[0].credits,function(it){return fmt(it.v)});
+  }
+
+  h+='<details><summary>All users as a table</summary><table class="data"><thead><tr>'+
+    '<th>User</th><th style="text-align:right">Credits</th>'+
+    '<th style="text-align:right">Quota</th><th>Status</th></tr></thead><tbody>';
+  a.users.forEach(function(u){
+    var isOver=u.over||(u.quota>0&&u.credits>u.quota);
+    h+='<tr><td>'+esc(u.user)+'</td><td class="n">'+fmt(u.credits)+'</td><td class="n">'+
+      (u.quota?fmt(u.quota):"—")+'</td><td>'+(isOver?'⚠ Over quota':'—')+'</td></tr>';
+  });
+  h+='</tbody></table></details>';
+
+  if(a.missingUseful.length) h+='<p class="note" style="margin-top:1.5rem">Columns not '+
+    'present in this file, whose sections were omitted rather than estimated: '+
+    esc(a.missingUseful.join(", "))+'.</p>';
+
+  h+='<p style="margin-top:2rem"><button id="again">Read another file</button></p>';
+  $("#report").innerHTML=h;
+  $("#report").hidden=false;
+  $("#problem").hidden=true;
+  $("#again").addEventListener("click",function(){
+    $("#report").hidden=true; $("#drop").hidden=false; window.scrollTo(0,0);
+  });
+  $("#drop").hidden=true;
+}
+function tile(k,v,unit){
+  return '<div class="tile"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+
+    (unit?' <small>'+esc(unit)+'</small>':'')+'</div></div>';
+}
+function problem(msg){
+  $("#problem").innerHTML='<div class="callout err"><p><strong>That file could not be '+
+    'read.</strong></p><p>'+esc(msg)+'</p></div>';
+  $("#problem").hidden=false; $("#report").hidden=true;
+}
+
+function handle(text,demo){
+  try{ render(analyse(parseCSV(text)),demo) }catch(e){ problem(e.message) }
+}
+
+/* ---- synthetic data --------------------------------------------------- */
+function demoCSV(){
+  var models=["gpt-5.6-luna","claude-sonnet-5","gpt-5.4-nano","claude-fable-5","gemini-3-flash"];
+  var out=["date,username,product,sku,model,quantity,unit_type,applied_cost_per_quantity,"+
+           "gross_amount,discount_amount,net_amount,exceeds_quota,total_monthly_quota,"+
+           "organization,cost_center_name,aic_quantity,aic_gross_amount"];
+  var seed=7, rnd=function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  for(var u=1;u<=120;u++){
+    var name="dev-"+String(u).padStart(3,"0");
+    /* heavy tail: a few very large consumers, a long thin body, some zeros */
+    var scale=u<=8?2600+rnd()*6000:(u<=30?400+rnd()*900:(u<=104?20+rnd()*260:0));
+    var days=scale>0?1+Math.floor(rnd()*6):0;
+    var total=0;
+    for(var d=0;d<days;d++){
+      var c=Math.round(scale/days*(0.6+rnd()*0.8));
+      if(c<=0)continue; total+=c;
+      var m=models[Math.floor(rnd()*models.length)];
+      var day="2026-09-"+String(1+Math.floor(rnd()*6)).padStart(2,"0");
+      out.push([day,name,"copilot","copilot_ai_credits",m,c,"AI Credits","0.01",
+        (c*0.01).toFixed(2),"0.00",(c*0.01).toFixed(2),(total>1900),1900,
+        "acme-eng","platform",c,(c*0.01).toFixed(2)].join(","));
+    }
+    if(days===0) out.push(["2026-09-01",name,"copilot","copilot_ai_credits","",0,
+      "AI Credits","0.01","0.00","0.00","0.00",false,1900,"acme-eng","platform",0,"0.00"].join(","));
+  }
+  return out.join("\n");
+}
+
+/* ---- wiring ----------------------------------------------------------- */
+var drop=$("#drop"),file=$("#file");
+$("#pick").addEventListener("click",function(){file.click()});
+$("#demo").addEventListener("click",function(){handle(demoCSV(),true)});
+file.addEventListener("change",function(){
+  if(file.files&&file.files[0])read(file.files[0]);
+});
+["dragenter","dragover"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",function(ev){
+  var f=ev.dataTransfer&&ev.dataTransfer.files&&ev.dataTransfer.files[0];
+  if(f)read(f);
+});
+function read(f){
+  var r=new FileReader();
+  r.onerror=function(){problem("The file could not be opened.")};
+  r.onload=function(){handle(String(r.result),false)};
+  r.readAsText(f);
+}
+})();
+</script>
+</body>
+</html>

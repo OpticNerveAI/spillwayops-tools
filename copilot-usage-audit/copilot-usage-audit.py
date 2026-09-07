@@ -208,7 +208,7 @@ def analyse(seats, per_user, total, entitlement):
         "pool": pool,
         "consumed": total,
         "unused": max(pool - total, 0),
-        "utilisation": (total / pool) if pool else None,
+        "utilization": (total / pool) if pool else None,
         "users_with_usage": n,
     }
     if n:
@@ -255,8 +255,8 @@ def report(a, notes, label):
 
     if a["consumed"] or a.get("users_with_usage"):
         add(f"  Consumed month-to-date     {fmt(a['consumed'])} credits")
-        if a["utilisation"] is not None:
-            add(f"  Pool utilisation           {a['utilisation']*100:5.1f} %  {bar(a['utilisation'])}")
+        if a["utilization"] is not None:
+            add(f"  Pool utilization           {a['utilization']*100:5.1f} %  {bar(a['utilization'])}")
             add(f"  Expiring unused            {fmt(a['unused'])} credits")
 
     if "top10_share" in a:

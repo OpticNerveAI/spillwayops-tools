@@ -1,6 +1,6 @@
 # copilot-usage-audit
 
-Reads GitHub Copilot seat and usage data for an organisation or enterprise and
+Reads GitHub Copilot seat and usage data for an organization or enterprise and
 prints a distribution report.
 
 One Python file, no dependencies, read-only.
@@ -12,7 +12,7 @@ One Python file, no dependencies, read-only.
   Included allowance         3,900 credits/user/month
   Monthly pool               468,000 credits
   Consumed month-to-date     116,944 credits
-  Pool utilisation            25.0 %  ████████························
+  Pool utilization            25.0 %  ████████························
   Expiring unused            351,056 credits
 
   Distribution
@@ -39,7 +39,7 @@ Python 3.8+. Standard library only.
 # synthetic data — no token, no network calls
 python3 copilot-usage-audit.py --demo
 
-# an organisation
+# an organization
 export GITHUB_TOKEN=ghp_...
 python3 copilot-usage-audit.py --org my-org
 
@@ -54,7 +54,7 @@ python3 copilot-usage-audit.py --org my-org --entitlement 2500 --json audit.json
 
 Classic PAT: `manage_billing:copilot` for an organization, or
 `manage_billing:enterprise` for an enterprise. Fine-grained token: the
-organisation **GitHub Copilot Business** permission, read access.
+organization **GitHub Copilot Business** permission, read access.
 
 Read access is sufficient. Write access is not required.
 
@@ -75,11 +75,11 @@ standard-library Python.
 
 | Figure | What it is |
 |---|---|
-| Seats | Copilot seats assigned in the organisation or enterprise |
+| Seats | Copilot seats assigned in the organization or enterprise |
 | Included allowance | Credits per user per month used for the calculation — from `--plan`, or `--entitlement` if given |
 | Monthly pool | Seats × included allowance |
 | Consumed month-to-date | Credits drawn so far in the current billing month |
-| Pool utilisation | Consumed ÷ monthly pool |
+| Pool utilization | Consumed ÷ monthly pool |
 | Expiring unused | Monthly pool − consumed, at the current point in the month |
 | Top 10% / 20% of users | Share of total consumption drawn by the heaviest decile and quintile |
 | Median user | Credits drawn by the middle user |
@@ -105,7 +105,7 @@ performance.
 - **Endpoint shapes change.** If the usage endpoint returns nothing, the script
   reports that in its Notes and falls back to seat activity rather than guessing.
 - **Month-to-date, not projected.** Consumption is what has been drawn so far in
-  the current month. Early in a month, utilisation reads low because it is.
+  the current month. Early in a month, utilization reads low because it is.
 - **"Above allowance" is a threshold count, not history.** It counts users who
   drew more than the included per-user allowance. It does not describe what any
   configured budget or cap actually did.

@@ -8,7 +8,7 @@
   Included allowance         1,900 credits/user/month
   Monthly pool               228,000 credits
   Consumed month-to-date     116,944 credits
-  Pool utilisation            51.3 %  ████████████████················
+  Pool utilization            51.3 %  ████████████████················
   Expiring unused            111,056 credits
 
   Distribution
