@@ -16,9 +16,12 @@ gets its own directory and its own README.
 
 ## How these tools behave
 
-- **Read-only.** Tools issue `GET` requests only. They do not write to your systems.
-- **No telemetry.** Nothing is sent anywhere. The only host a tool contacts is the
-  vendor API it reads, named in that tool's README.
+- **Nothing is sent anywhere.** The tool published here reads a file you already
+  have and makes no network requests at all — no upload, no telemetry, no
+  third-party scripts or fonts. Where a future tool needs to call a vendor API,
+  its README names the host and lists exactly what it requests.
+- **Nothing is changed.** Tools do not write to your systems or to your vendor
+  account.
 - **No dependencies** where possible, so a tool can be read in full before it is run.
 - **Demo mode.** Every tool runs against synthetic data with no token and no
   network call, so the output shape can be inspected before any access is granted.
