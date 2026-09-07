@@ -98,4 +98,4 @@ do not — so the figures describe capacity draw, not output or performance.
 
 ## License
 
-MIT — see [LICENSE](../LICENSE). Copyright (c) 2026 Optic Nerve AI, LLC.
+MIT — see [LICENSE](../LICENSE). Copyright (c) 2026 Optic Nerve AI, LLC.· [www.spillwayops.com](https://www.spillwayops.com)
