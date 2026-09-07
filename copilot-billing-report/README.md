@@ -8,7 +8,7 @@ One HTML file. No install, no runtime, no access token.
 
 ## Use
 
-**Hosted:** <https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/>
+**Hosted:** [https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html](https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html)
 
 **Local:** download `index.html` and open it. It behaves identically offline.
 
@@ -96,6 +96,6 @@ do not — so the figures describe capacity draw, not output or performance.
 - **Export formats change.** If a required column is absent the tool names it and
   stops rather than inferring. Corrections by pull request are welcome.
 
-## Licence
+## License
 
-MIT — see [LICENSE](../LICENSE). Copyright (c) 2026 Optic Nerve AI, LLC.
+MIT — see [LICENSE](../LICENSE). Copyright (c) 2026 Optic Nerve AI, LLC.· [www.spillwayops.com](https://www.spillwayops.com)

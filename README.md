@@ -9,7 +9,7 @@ Each tool is self-contained and runs on its own.
 
 | Tool | What it does |
 |---|---|
-| [`copilot-billing-report`](copilot-billing-report/) | Reads a GitHub Copilot billing usage CSV and shows the same distribution in the browser: consumption per user, quota utilization, users over quota, and credits by model. One HTML file — no install, no runtime, no access token. **[Run it](https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/)** or download and run it locally. |
+| [`copilot-billing-report`](copilot-billing-report/) | Reads a GitHub Copilot billing usage CSV and shows the same distribution in the browser: consumption per user, quota utilization, users over quota, and credits by model. One HTML file — no install, no runtime, no access token. **[https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html](https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html)** or download and run it locally. |
 
 Further tools, including for vendors other than GitHub, will be added here. Each
 gets its own directory and its own README.
