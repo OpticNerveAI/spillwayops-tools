@@ -8,7 +8,7 @@ One HTML file. No install, no runtime, no access token.
 
 ## Use
 
-**Hosted:** <https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/>
+**Hosted:** [https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html](https://opticnerveai.github.io/spillwayops-tools/copilot-billing-report/index.html)
 
 **Local:** download `index.html` and open it. It behaves identically offline.
 
