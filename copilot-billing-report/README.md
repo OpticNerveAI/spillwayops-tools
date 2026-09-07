@@ -96,6 +96,6 @@ do not — so the figures describe capacity draw, not output or performance.
 - **Export formats change.** If a required column is absent the tool names it and
   stops rather than inferring. Corrections by pull request are welcome.
 
-## Licence
+## License
 
 MIT — see [LICENSE](../LICENSE). Copyright (c) 2026 Optic Nerve AI, LLC.
