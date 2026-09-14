@@ -1,0 +1,95 @@
+user_email,account_uuid,product,model,model_family,total_requests,total_prompt_tokens,total_completion_tokens,total_net_spend_usd,total_gross_spend_usd
+dev-001@example.com,c8e04639-e752-c11e-9f42-3a9018720192,Claude Code,claude-haiku-4-5,Haiku,4597,41379368,10344842,116.38,116.38
+dev-001@example.com,c8e04639-e752-c11e-9f42-3a9018720192,"Office Agents (Excel, PowerPoint, Word)",claude-opus-5,Opus,250,2253601,563400,95.07,95.07
+dev-002@example.com,7fa8cba3-7e48-efee-0e8a-9fa7b16731d7,Claude Code,claude-fable-5-1,Fable,389,3509747,877436,98.71,98.71
+dev-002@example.com,7fa8cba3-7e48-efee-0e8a-9fa7b16731d7,Claude Code,claude-sonnet-5,Sonnet,999,8995445,2248861,75.90,75.90
+dev-002@example.com,7fa8cba3-7e48-efee-0e8a-9fa7b16731d7,"Office Agents (Excel, PowerPoint, Word)",claude-fable-5-1,Fable,342,3080298,770074,86.63,86.63
+dev-003@example.com,59554af0-dcb6-38b4-4b3a-f352b85d1ee1,Claude Code,claude-haiku-4-5,Haiku,6321,56889510,14222377,160.00,160.00
+dev-003@example.com,59554af0-dcb6-38b4-4b3a-f352b85d1ee1,Claude Code,claude-opus-5,Opus,403,3630969,907742,153.18,153.18
+dev-003@example.com,59554af0-dcb6-38b4-4b3a-f352b85d1ee1,Claude Code,claude-sonnet-5,Sonnet,1531,13780233,3445058,116.27,116.27
+dev-004@example.com,38109f99-9b88-5cb1-a637-2f11f100716e,Claude Code,claude-opus-5,Opus,1079,9712736,2428184,409.76,409.76
+dev-005@example.com,e68a19c1-8386-7d63-27e2-4d5bcfac8f27,Claude Code,claude-haiku-4-5,Haiku,6693,60245988,15061497,169.44,169.44
+dev-005@example.com,e68a19c1-8386-7d63-27e2-4d5bcfac8f27,Claude Code,claude-sonnet-5,Sonnet,1486,13380965,3345241,112.90,112.90
+dev-006@example.com,fcc52fc2-77d8-321e-696f-0555043bcda8,Claude Code,claude-opus-5,Opus,181,1631183,407795,68.82,68.82
+dev-007@example.com,3c2de6ba-c9e5-faf5-1eb0-3050718d0930,Claude Code,claude-haiku-4-5,Haiku,3648,32833400,8208350,92.34,101.58
+dev-008@example.com,b9e29f99-1dad-c410-9750-8c8630b20c14,Claude Code,claude-opus-5,Opus,142,1284168,321042,54.18,54.18
+dev-008@example.com,b9e29f99-1dad-c410-9750-8c8630b20c14,"Office Agents (Excel, PowerPoint, Word)",claude-fable-5-1,Fable,262,2366467,591616,66.56,66.56
+dev-009@example.com,7349b8c6-f5ed-301c-c24b-3f3cb66e2f1e,Claude Code,claude-haiku-4-5,Haiku,2664,23976531,5994132,67.43,67.43
+dev-009@example.com,7349b8c6-f5ed-301c-c24b-3f3cb66e2f1e,Claude Code,claude-fable-5-1,Fable,272,2452017,613004,68.96,75.86
+dev-010@example.com,9bbe79ea-237b-2210-35a1-0959b18e790d,Cowork,claude-fable-5-1,Fable,203,1835049,458762,51.61,56.77
+dev-010@example.com,9bbe79ea-237b-2210-35a1-0959b18e790d,Claude Code,claude-haiku-4-5,Haiku,2108,18975001,4743750,53.37,53.37
+dev-011@example.com,bbdf20a7-275a-1f73-d339-2d90ec850f7d,Claude Code,claude-sonnet-5,Sonnet,639,5755094,1438773,48.56,48.56
+dev-011@example.com,bbdf20a7-275a-1f73-d339-2d90ec850f7d,Claude Code,claude-opus-5,Opus,111,1002372,250593,42.29,46.52
+dev-012@example.com,4b7b4498-2723-fbb2-ca81-b49f7f655647,Claude Code,claude-haiku-4-5,Haiku,2044,18397810,4599452,51.74,51.74
+dev-012@example.com,4b7b4498-2723-fbb2-ca81-b49f7f655647,Claude Code,claude-opus-5,Opus,145,1305620,326405,55.08,55.08
+dev-013@example.com,aadbb333-3b73-05b2-8289-ea505e26e335,Chat,claude-fable-5-1,Fable,222,1998480,499620,56.21,56.21
+dev-013@example.com,aadbb333-3b73-05b2-8289-ea505e26e335,Claude Code,claude-haiku-4-5,Haiku,1804,16238891,4059722,45.67,45.67
+dev-014@example.com,774b6bb1-fada-ac60-616e-28c9118305d9,Claude Code,claude-fable-5-1,Fable,128,1158476,289619,32.58,32.58
+dev-014@example.com,774b6bb1-fada-ac60-616e-28c9118305d9,Claude Code,claude-fable-5-1,Fable,150,1357746,339436,38.19,38.19
+dev-015@example.com,4a93e070-72c5-da19-9f00-b4f9f8d2060a,Claude Code,claude-fable-5-1,Fable,340,3065814,766453,86.23,86.23
+dev-015@example.com,4a93e070-72c5-da19-9f00-b4f9f8d2060a,"Office Agents (Excel, PowerPoint, Word)",claude-fable-5-1,Fable,193,1743190,435797,49.03,49.03
+dev-016@example.com,181fa375-10d6-2a44-65f2-bc9e2dace0d7,Claude Code,claude-haiku-4-5,Haiku,2867,25805049,6451262,72.58,72.58
+dev-016@example.com,181fa375-10d6-2a44-65f2-bc9e2dace0d7,"Office Agents (Excel, PowerPoint, Word)",claude-haiku-4-5,Haiku,2430,21878295,5469573,61.53,61.53
+dev-017@example.com,d0512fa4-521a-4b5d-4ac9-de5c381a6cea,Claude Code,claude-sonnet-5,Sonnet,331,2982166,745541,25.16,25.16
+dev-017@example.com,d0512fa4-521a-4b5d-4ac9-de5c381a6cea,Claude Code,claude-opus-5,Opus,57,514054,128513,21.69,21.69
+dev-018@example.com,4382c650-c665-977b-f23a-7221b49261af,Claude Code,claude-fable-5-1,Fable,84,760752,190188,21.40,23.54
+dev-019@example.com,c6831084-8a03-7d1f-2810-c67c346013f1,Claude Code,claude-sonnet-5,Sonnet,38,347294,86823,2.93,3.22
+dev-019@example.com,c6831084-8a03-7d1f-2810-c67c346013f1,Claude Code,claude-fable-5-1,Fable,11,99373,24843,2.79,3.07
+dev-019@example.com,c6831084-8a03-7d1f-2810-c67c346013f1,Claude Code,claude-sonnet-5,Sonnet,28,256589,64147,2.16,2.38
+dev-020@example.com,9c5ce2ae-008d-c5ed-91d9-cd71061d2344,Claude Code,claude-haiku-4-5,Haiku,253,2281591,570397,6.42,6.42
+dev-020@example.com,9c5ce2ae-008d-c5ed-91d9-cd71061d2344,Claude Code,claude-fable-5-1,Fable,16,145116,36279,4.08,4.08
+dev-021@example.com,803922d9-238f-8f30-188b-1c400dcb04cf,Claude Code,claude-sonnet-5,Sonnet,232,2094192,523548,17.67,19.44
+dev-021@example.com,803922d9-238f-8f30-188b-1c400dcb04cf,Claude Code,claude-sonnet-5,Sonnet,135,1215725,303931,10.26,10.26
+dev-022@example.com,ca025c82-6d3e-b2b1-502e-b54f48053ec0,Claude Code,claude-sonnet-5,Sonnet,156,1412524,353131,11.92,11.92
+dev-022@example.com,ca025c82-6d3e-b2b1-502e-b54f48053ec0,Claude Code,claude-opus-5,Opus,26,235867,58966,9.95,10.95
+dev-022@example.com,ca025c82-6d3e-b2b1-502e-b54f48053ec0,Claude Code,claude-sonnet-5,Sonnet,168,1519348,379837,12.82,12.82
+dev-023@example.com,a3a21a86-eb07-d0ff-478e-080f9b39686f,Chat,claude-sonnet-5,Sonnet,104,937443,234360,7.91,8.70
+dev-023@example.com,a3a21a86-eb07-d0ff-478e-080f9b39686f,Claude Code,claude-opus-5,Opus,11,105728,26432,4.46,4.91
+dev-024@example.com,fa897654-134e-fab9-fe59-217cef637cee,Chat,claude-haiku-4-5,Haiku,1178,10602874,2650718,29.82,32.80
+dev-025@example.com,2724f366-1c03-4f6c-cc95-59d6afec93d0,Claude Code,claude-opus-5,Opus,19,177732,44433,7.50,7.50
+dev-025@example.com,2724f366-1c03-4f6c-cc95-59d6afec93d0,Claude Code,claude-opus-5,Opus,23,207323,51830,8.75,9.62
+dev-026@example.com,3adea51b-bed1-9947-af41-775f4ba1f8f9,Claude Code,claude-fable-5-1,Fable,21,197055,49263,5.54,5.54
+dev-026@example.com,3adea51b-bed1-9947-af41-775f4ba1f8f9,Claude Code,claude-sonnet-5,Sonnet,70,630918,157729,5.32,5.32
+dev-027@example.com,af5d6b9f-f041-6e55-981b-2cc62e275ef5,Claude Code,claude-haiku-4-5,Haiku,706,6358457,1589614,17.88,19.67
+dev-028@example.com,e6746423-efec-fa62-6248-2718741f5668,Chat,claude-fable-5-1,Fable,21,197463,49365,5.55,5.55
+dev-029@example.com,d99abf7a-4f4f-83d0-32b9-a1d81325df21,Claude Code,claude-haiku-4-5,Haiku,143,1288954,322238,3.63,3.63
+dev-029@example.com,d99abf7a-4f4f-83d0-32b9-a1d81325df21,"Office Agents (Excel, PowerPoint, Word)",claude-fable-5-1,Fable,16,145388,36347,4.09,4.50
+dev-030@example.com,5e0af66d-e480-883f-cb01-d93f6e229174,Claude Code,claude-sonnet-5,Sonnet,234,2111022,527755,17.81,17.81
+dev-031@example.com,c3d0cb42-c140-3502-3061-5546119e6fff,Chat,claude-haiku-4-5,Haiku,351,3161365,790341,8.89,9.78
+dev-031@example.com,c3d0cb42-c140-3502-3061-5546119e6fff,Claude Code,claude-sonnet-5,Sonnet,125,1130614,282653,9.54,9.54
+dev-032@example.com,5e8aa181-d1ff-04e6-4991-81116b4d60ab,Chat,claude-sonnet-5,Sonnet,97,878473,219618,7.41,7.41
+dev-032@example.com,5e8aa181-d1ff-04e6-4991-81116b4d60ab,Claude Code,claude-haiku-4-5,Haiku,347,3127486,781871,8.80,9.68
+dev-033@example.com,d2517470-6dc3-cebe-2a04-e40d48e75adb,Claude Code,claude-haiku-4-5,Haiku,746,6715576,1678894,18.89,18.89
+dev-033@example.com,d2517470-6dc3-cebe-2a04-e40d48e75adb,Claude Code,claude-sonnet-5,Sonnet,165,1492992,373248,12.60,12.60
+dev-034@example.com,c088ca98-0f83-2c18-1471-47c68958388b,Claude Code,claude-opus-5,Opus,41,376239,94059,15.87,15.87
+dev-035@example.com,a85bd83c-d540-5b91-e87e-f822f371a0b5,"Office Agents (Excel, PowerPoint, Word)",claude-haiku-4-5,Haiku,108,975088,243772,2.74,3.02
+dev-035@example.com,a85bd83c-d540-5b91-e87e-f822f371a0b5,Claude Code,claude-fable-5-1,Fable,15,138492,34623,3.90,3.90
+dev-035@example.com,a85bd83c-d540-5b91-e87e-f822f371a0b5,"Office Agents (Excel, PowerPoint, Word)",claude-sonnet-5,Sonnet,56,512350,128087,4.32,4.76
+dev-036@example.com,2f5cd3ac-4782-f48e-9708-e29f8f12045a,Cowork,claude-opus-5,Opus,63,568251,142062,23.97,23.97
+dev-037@example.com,0104479d-fccd-2ca5-7215-e3b6dbd60d0b,Claude Code,claude-fable-5-1,Fable,28,260558,65139,7.33,7.33
+dev-037@example.com,0104479d-fccd-2ca5-7215-e3b6dbd60d0b,Chat,claude-sonnet-5,Sonnet,103,932483,233120,7.87,7.87
+dev-037@example.com,0104479d-fccd-2ca5-7215-e3b6dbd60d0b,Claude Code,claude-haiku-4-5,Haiku,443,3995044,998761,11.24,12.36
+dev-038@example.com,10683725-7f9e-2d8f-0ff9-a60d224555b0,Cowork,claude-haiku-4-5,Haiku,307,2763698,690924,7.77,7.77
+dev-038@example.com,10683725-7f9e-2d8f-0ff9-a60d224555b0,Claude Code,claude-opus-5,Opus,23,209527,52381,8.84,9.72
+dev-039@example.com,32c7a1be-3300-f97a-01a1-b5be67ba453f,"Office Agents (Excel, PowerPoint, Word)",claude-opus-5,Opus,48,434032,108508,18.31,18.31
+dev-039@example.com,32c7a1be-3300-f97a-01a1-b5be67ba453f,"Office Agents (Excel, PowerPoint, Word)",claude-opus-5,Opus,29,268349,67087,11.32,11.32
+dev-040@example.com,a3d30a41-c00e-341a-a3eb-bf687739e4e5,Claude Code,claude-haiku-4-5,Haiku,59,534715,133678,1.50,1.65
+dev-040@example.com,a3d30a41-c00e-341a-a3eb-bf687739e4e5,Chat,claude-fable-5-1,Fable,6,57546,14386,1.62,1.62
+dev-041@example.com,c11aa55b-c204-9a93-f185-dc71f7d83ecb,Claude Code,claude-sonnet-5,Sonnet,19,176800,44200,1.49,1.49
+dev-041@example.com,c11aa55b-c204-9a93-f185-dc71f7d83ecb,Claude Code,claude-fable-5-1,Fable,9,86119,21529,2.42,2.42
+dev-041@example.com,c11aa55b-c204-9a93-f185-dc71f7d83ecb,Claude Code,claude-sonnet-5,Sonnet,27,243666,60916,2.06,2.06
+dev-042@example.com,f02a8766-adf9-f8fb-f19b-f1fe83f5fe25,Claude Code,claude-haiku-4-5,Haiku,578,5206958,1301739,14.64,16.11
+dev-042@example.com,f02a8766-adf9-f8fb-f19b-f1fe83f5fe25,"Office Agents (Excel, PowerPoint, Word)",claude-fable-5-1,Fable,94,853778,213444,24.01,24.01
+dev-043@example.com,e004f770-0ab2-d3c5-1a9a-782689cb5e7e,Claude Code,claude-sonnet-5,Sonnet,204,1840680,460170,15.53,15.53
+dev-043@example.com,e004f770-0ab2-d3c5-1a9a-782689cb5e7e,Claude Code,claude-haiku-4-5,Haiku,653,5879080,1469770,16.53,18.19
+dev-044@example.com,904e0c9f-084a-7779-8f32-ea7f3947da59,Claude Code,claude-sonnet-5,Sonnet,396,3571627,892906,30.14,33.15
+dev-045@example.com,8e46ee16-1ead-f6c5-33f3-28ff9fc396c1,Chat,claude-opus-5,Opus,12,108527,27131,4.58,4.58
+dev-045@example.com,8e46ee16-1ead-f6c5-33f3-28ff9fc396c1,Claude Code,claude-fable-5-1,Fable,15,138617,34654,3.90,4.29
+dev-046@example.com,37b32df9-22bf-90de-484c-dbd44a6670c6,Claude Code,claude-fable-5-1,Fable,34,307350,76837,8.64,8.64
+dev-046@example.com,37b32df9-22bf-90de-484c-dbd44a6670c6,Claude Code,claude-fable-5-1,Fable,40,367660,91915,10.34,10.34
+dev-046@example.com,37b32df9-22bf-90de-484c-dbd44a6670c6,Claude Code,claude-opus-5,Opus,24,219911,54977,9.28,9.28
+dev-047@example.com,6aced23b-23df-38d2-3d1b-d4099dbb35eb,Chat,claude-sonnet-5,Sonnet,116,1052868,263217,8.88,8.88
+dev-047@example.com,6aced23b-23df-38d2-3d1b-d4099dbb35eb,Claude Code,claude-sonnet-5,Sonnet,130,1177418,294354,9.93,9.93
+dev-048@example.com,10c718bf-b8df-d23d-dbb0-f83096173069,Cowork,claude-opus-5,Opus,36,326567,81641,13.78,13.78
+dev-048@example.com,10c718bf-b8df-d23d-dbb0-f83096173069,Chat,claude-haiku-4-5,Haiku,801,7214641,1803660,20.29,20.29
+(org service usage),,Claude Code,claude-sonnet-5,Sonnet,120,2400000,300000,14.40,14.40

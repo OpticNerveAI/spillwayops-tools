@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Claude spend report</title>
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --border:#e4e4e1; --border-strong:#c9c9c4;
+  --ink:#1c1c1a; --ink-2:#55554f; --ink-3:#84847c;
+  --mark:#2f6f6a; --mark-soft:#d5e6e4; --track:#eeeeeb;
+  --warn:#8a5a00; --warn-soft:#f6ead2;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#161614; --surface:#1e1e1c; --border:#33332f; --border-strong:#4a4a44;
+  --ink:#f0efe9; --ink-2:#b4b4ac; --ink-3:#84847c;
+  --mark:#6fbfb6; --mark-soft:#24403d; --track:#2a2a26;
+  --warn:#e0b063; --warn-soft:#3a2f18;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--sans);
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+h1{font-size:1.5rem;margin:0 0 .35rem;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:2.5rem 0 .85rem;letter-spacing:-.005em}
+h2:first-of-type{margin-top:2rem}
+.sub{color:var(--ink-2);margin:0 0 2rem;max-width:44rem}
+.note{color:var(--ink-3);font-size:.83rem}
+code{font-family:var(--mono);font-size:.88em;background:var(--track);
+  padding:.1em .35em;border-radius:3px}
+
+/* ---- intake ---------------------------------------------------------- */
+#drop{border:1.5px dashed var(--border-strong);border-radius:10px;background:var(--surface);
+  padding:2.25rem 1.5rem;text-align:center;transition:border-color .12s,background .12s}
+#drop.over{border-color:var(--mark);background:var(--mark-soft)}
+#drop p{margin:0 0 1rem;color:var(--ink-2)}
+button{font:inherit;font-size:.9rem;padding:.5rem .95rem;border-radius:7px;
+  border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);
+  cursor:pointer}
+button:hover{border-color:var(--mark);color:var(--mark)}
+button.primary{background:var(--mark);border-color:var(--mark);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) button.primary{color:#10201e}}
+button.primary:hover{opacity:.9;color:#fff}
+.actions{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+
+/* ---- typed inputs ----------------------------------------------------- */
+.inputs{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));
+  background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:1rem 1.1rem;margin:1.5rem 0 0}
+.inputs label{display:block;font-size:.8rem;color:var(--ink-2);margin-bottom:.35rem}
+.inputs input{font:inherit;font-family:var(--mono);font-size:.95rem;width:100%;
+  padding:.45rem .6rem;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--bg);color:var(--ink)}
+.inputs input:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.inputs .hint{grid-column:1/-1;margin:0;font-size:.8rem;color:var(--ink-3)}
+
+/* ---- stat tiles ------------------------------------------------------ */
+.tiles{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:1rem 1.1rem}
+.tile .k{font-size:.76rem;color:var(--ink-3);letter-spacing:.02em;margin-bottom:.3rem}
+.tile .v{font-family:var(--mono);font-size:1.35rem;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.tile .v small{font-size:.6em;color:var(--ink-3);letter-spacing:0}
+
+/* ---- meters ---------------------------------------------------------- */
+.meter{margin:.9rem 0 1.3rem}
+.meter .lab{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem;
+  margin-bottom:.4rem}
+.meter .lab b{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums}
+.track{height:10px;background:var(--track);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--mark);border-radius:4px;min-width:2px}
+
+/* ---- bars ------------------------------------------------------------ */
+table.bars{width:100%;border-collapse:separate;border-spacing:0 2px}
+table.bars td{padding:0;vertical-align:middle}
+table.bars td.name{width:14rem;padding-right:.75rem;font-size:.86rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.bars td.plot{width:auto}
+table.bars td.val{width:8rem;text-align:right;padding-left:.75rem;font-family:var(--mono);
+  font-size:.83rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.bar{height:14px;background:var(--mark);border-radius:0 4px 4px 0;min-width:2px}
+tr.over .bar{background:var(--warn)}
+tr:hover td{background:var(--track)}
+
+/* ---- flag ------------------------------------------------------------ */
+.flag{display:inline-flex;align-items:center;gap:.4rem;background:var(--warn-soft);
+  color:var(--warn);border-radius:6px;padding:.15rem .5rem;font-size:.8rem}
+.callout{border:1px solid var(--border);border-left:3px solid var(--mark);
+  background:var(--surface);border-radius:0 8px 8px 0;padding:1rem 1.15rem;margin:1.25rem 0}
+.callout.warn{border-left-color:var(--warn)}
+.callout p{margin:0 0 .5rem}.callout p:last-child{margin:0}
+
+/* ---- misc ------------------------------------------------------------ */
+table.data{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem}
+table.data th,table.data td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid var(--border)}
+table.data th{color:var(--ink-3);font-weight:500;font-size:.78rem}
+table.data td.n,table.data th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+details{margin-top:.6rem}summary{cursor:pointer;font-size:.86rem;color:var(--ink-2)}
+[hidden]{display:none!important}
+.err{border-left-color:var(--warn)}
+footer{margin-top:4rem;padding-top:1.25rem;border-top:1px solid var(--border);
+  color:var(--ink-3);font-size:.82rem}
+a{color:var(--mark);text-decoration:underline;text-underline-offset:.18em}
+a:hover{color:var(--ink)}
+a:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Claude spend report</h1>
+<p class="sub">Reads the spend report CSV exported from a Claude Team or Enterprise
+organization and shows how usage-credit spend is distributed across members, by
+product and by model, and who is at or over a per-member limit you type in. The
+file is parsed in this page. Nothing is uploaded and this page makes no network
+requests of any kind.</p>
+
+<div id="drop">
+  <p>Drop the CSV here, or</p>
+  <div class="actions">
+    <button class="primary" id="pick">Choose a file</button>
+    <button id="demo">Use synthetic data</button>
+  </div>
+  <input type="file" id="file" accept=".csv,text/csv" hidden>
+</div>
+
+<div id="problem" hidden></div>
+<div id="controls" class="inputs" hidden>
+  <div>
+    <label for="limit">Per-member monthly spend limit (USD), as set in your organization</label>
+    <input type="number" id="limit" min="0" step="1" inputmode="decimal" placeholder="for example 150">
+  </div>
+  <div>
+    <label for="seats">Seats in the organization</label>
+    <input type="number" id="seats" min="0" step="1" inputmode="numeric" placeholder="for example 120">
+  </div>
+  <p class="hint">Both values are yours, typed here. Neither is in the export, so the
+  figures that use them are labeled as based on what you typed.</p>
+</div>
+<div id="report" hidden></div>
+
+<footer>
+  <p><strong>Where the CSV comes from.</strong> An Owner or Primary Owner exports it
+  from claude.ai: Settings &rarr; Analytics &rarr; &ldquo;How much is Claude
+  costing?&rdquo; &rarr; Export spend report, choosing month to date, last month, the
+  last 90 days or a custom range. The export is available once usage credits are
+  turned on for the organization. No token is required.</p>
+  <p>Expected columns: <code>user_email</code>, <code>product</code>,
+  <code>model</code>, <code>total_requests</code>, <code>total_prompt_tokens</code>,
+  <code>total_completion_tokens</code>, <code>total_net_spend_usd</code>,
+  <code>total_gross_spend_usd</code>, and, where present, an account UUID and a
+  model family column. Columns are matched by header name; unexpected columns are
+  ignored and missing ones are reported.</p>
+  <p><strong>What the file carries.</strong> On Team and seat-based Enterprise plans
+  the spend report covers usage-credit spend only, so this report reads who is
+  buying past their included allowance and how much, not consumption inside it. On
+  usage-based Enterprise plans the report covers all usage.</p>
+  <p><strong>Hosted or local, your choice.</strong> This page is served from
+  GitHub Pages, directly out of the public repository &mdash; the source it runs is the
+  source you can read at
+  <a href="https://github.com/OpticNerveAI/spillwayops-tools" rel="noopener">github.com/OpticNerveAI/spillwayops-tools</a>.
+  You can also save this file and open it from your own disk; it behaves identically
+  offline, and a copy you have read cannot change under you.</p>
+
+  <p>MIT licensed. Copyright &copy; 2026 Optic Nerve AI, LLC &middot;
+  <a href="https://www.spillwayops.com" rel="noopener">www.spillwayops.com</a></p>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toLocaleString("en-US")};
+var usd=function(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})};
+var pct=function(n){return (n*100).toFixed(1)+" %"};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})};
+
+/* ---- CSV parse (RFC4180: quoted fields, embedded commas, "" escapes) --- */
+function parseCSV(text){
+  text=text.replace(/^﻿/,"");
+  var rows=[],row=[],f="",q=false,i=0,c,n;
+  for(;i<text.length;i++){
+    c=text[i];
+    if(q){
+      if(c==='"'){ n=text[i+1]; if(n==='"'){f+='"';i++} else {q=false} }
+      else f+=c;
+    } else if(c==='"'){ q=true }
+    else if(c===","){ row.push(f); f="" }
+    else if(c==="\n"||c==="\r"){
+      if(c==="\r"&&text[i+1]==="\n")i++;
+      row.push(f); f="";
+      if(row.length>1||row[0]!=="")rows.push(row);
+      row=[];
+    } else f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+
+/* Header names as the Help Center documents them, plus the spellings a
+   differently-worded export might use. The first alias found wins. */
+var ALIASES={
+  user:      ["user_email","email","user","member_email","member","user email"],
+  account:   ["account_uuid","account_id","account uuid","uuid"],
+  product:   ["product"],
+  model:     ["model"],
+  family:    ["model_family","model family","family"],
+  requests:  ["total_requests","requests"],
+  prompt:    ["total_prompt_tokens","prompt_tokens","total_input_tokens","input_tokens"],
+  completion:["total_completion_tokens","completion_tokens","total_output_tokens","output_tokens"],
+  net:       ["total_net_spend_usd","net_spend_usd","total_net_spend","net_spend"],
+  gross:     ["total_gross_spend_usd","gross_spend_usd","total_gross_spend","gross_spend"]
+};
+var REQUIRED=["user","net"];
+var LABEL={user:"user_email",account:"account UUID",product:"product",model:"model",
+  family:"model family",requests:"total_requests",prompt:"total_prompt_tokens",
+  completion:"total_completion_tokens",net:"total_net_spend_usd",gross:"total_gross_spend_usd"};
+
+function analyse(rows){
+  if(rows.length<2) throw new Error("The file has no data rows.");
+  var head=rows[0].map(function(h){return h.trim().toLowerCase()});
+  var idx={}; head.forEach(function(h,i){if(!(h in idx))idx[h]=i});
+  var col={},found={};
+  Object.keys(ALIASES).forEach(function(k){
+    for(var a=0;a<ALIASES[k].length;a++){
+      if(ALIASES[k][a] in idx){col[k]=idx[ALIASES[k][a]];found[k]=ALIASES[k][a];break}
+    }
+  });
+
+  /* The Claude Code analytics export (member emails and lines of code) carries
+     no spend column. Name it rather than reporting a missing column. */
+  if(!("net" in col) && head.some(function(h){return /lines/.test(h)}))
+    throw new Error("This looks like the Claude Code analytics export (member emails and "+
+      "lines of code), which carries no spend. This tool needs the spend report: "+
+      "Settings > Analytics > How much is Claude costing? > Export spend report.");
+
+  var missingReq=REQUIRED.filter(function(k){return !(k in col)});
+  if(missingReq.length)
+    throw new Error("Missing required column"+(missingReq.length>1?"s":"")+": "+
+      missingReq.map(function(k){return LABEL[k]}).join(", ")+". Found: "+head.join(", "));
+  var missingUseful=["product","model","requests","prompt","completion","gross"]
+    .filter(function(k){return !(k in col)}).map(function(k){return LABEL[k]});
+
+  var get=function(r,k){var i=col[k];return i===undefined?"":(r[i]||"").trim()};
+  var num=function(v){var n=parseFloat(String(v).replace(/[^0-9.\-]/g,""));return isFinite(n)?n:0};
+
+  var users={},products={},models={},rowsUsed=0,skippedNoUser=0;
+  var orgService={rows:0,net:0,gross:0};
+  var noModel={rows:0,net:0};
+  for(var r=1;r<rows.length;r++){
+    var row=rows[r];
+    if(!row||row.length<2)continue;
+    var u=get(row,"user");
+    if(!u){skippedNoUser++;continue}
+    var net=num(get(row,"net")), gross=("gross" in col)?num(get(row,"gross")):net;
+    if(/org service usage/i.test(u)){orgService.rows++;orgService.net+=net;orgService.gross+=gross;continue}
+    if("model" in col && get(row,"model")===""){noModel.rows++;noModel.net+=net;continue}
+
+    var uu=users[u]||(users[u]={user:u,net:0,gross:0,requests:0,prompt:0,completion:0,rows:0});
+    uu.net+=net; uu.gross+=gross; uu.rows++;
+    uu.requests+=num(get(row,"requests"));
+    uu.prompt+=num(get(row,"prompt"));
+    uu.completion+=num(get(row,"completion"));
+
+    var p=("product" in col)?(get(row,"product")||"(unspecified)"):"(unspecified)";
+    products[p]=(products[p]||0)+net;
+    var m=get(row,"model")||"(unspecified)";
+    models[m]=(models[m]||0)+net;
+    rowsUsed++;
+  }
+
+  var list=Object.keys(users).map(function(k){return users[k]});
+  if(!list.length) throw new Error("No rows attributed to a member were found in this file.");
+  list.sort(function(a,b){return b.net-a.net});
+
+  var totalNet=list.reduce(function(s,u){return s+u.net},0);
+  var totalGross=list.reduce(function(s,u){return s+u.gross},0);
+  var share=function(frac){
+    var n=Math.max(1,Math.ceil(list.length*frac));
+    var s=list.slice(0,n).reduce(function(a,u){return a+u.net},0);
+    return totalNet>0?s/totalNet:0;
+  };
+  var mid=list.map(function(u){return u.net}).sort(function(a,b){return a-b});
+  var median=mid.length?(mid.length%2?mid[(mid.length-1)/2]
+             :(mid[mid.length/2-1]+mid[mid.length/2])/2):0;
+  var toList=function(o){return Object.keys(o).map(function(k){return{name:k,v:o[k]}})
+    .filter(function(x){return x.v>0}).sort(function(a,b){return b.v-a.v})};
+
+  return {
+    users:list, totalNet:totalNet, totalGross:totalGross,
+    discounts:("gross" in col)?Math.max(0,totalGross-totalNet):0, grossKnown:("gross" in col),
+    top10:share(0.10), top20:share(0.20), median:median, heaviest:list[0].net,
+    requests:list.reduce(function(s,u){return s+u.requests},0),
+    prompt:list.reduce(function(s,u){return s+u.prompt},0),
+    completion:list.reduce(function(s,u){return s+u.completion},0),
+    tokensKnown:("prompt" in col)||("completion" in col), requestsKnown:("requests" in col),
+    products:toList(products), models:toList(models),
+    orgService:orgService, noModel:noModel,
+    rowsUsed:rowsUsed, skippedNoUser:skippedNoUser,
+    found:found, missingUseful:missingUseful
+  };
+}
+
+/* ---- render ---------------------------------------------------------- */
+function meter(label,value,frac){
+  return '<div class="meter"><div class="lab"><span>'+esc(label)+
+    '</span><b>'+esc(value)+'</b></div><div class="track"><div class="fill" style="width:'+
+    (Math.max(0,Math.min(1,frac))*100).toFixed(1)+'%"></div></div></div>';
+}
+function bars(items,max,fmtv,flag,flagText){
+  var h='<table class="bars">';
+  items.forEach(function(it){
+    var isFlagged=flag&&flag(it);
+    h+='<tr'+(isFlagged?' class="over"':'')+'><td class="name" title="'+esc(it.name)+
+      (isFlagged?' — '+esc(flagText):'')+'">'+(isFlagged?'<span aria-label="'+esc(flagText)+'">⚠</span> ':'')+
+      esc(it.name)+'</td><td class="plot"><div class="bar" style="width:'+
+      (max>0?Math.max(0.5,it.v/max*100):0).toFixed(1)+'%"></div></td>'+
+      '<td class="val">'+esc(fmtv(it))+'</td></tr>';
+  });
+  return h+'</table>';
+}
+function tile(k,v,unit){
+  return '<div class="tile"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+
+    (unit?' <small>'+esc(unit)+'</small>':'')+'</div></div>';
+}
+
+var current=null, currentDemo=false;
+
+function inputs(){
+  var lim=parseFloat($("#limit").value), seats=parseInt($("#seats").value,10);
+  return {limit:(isFinite(lim)&&lim>0)?lim:0, seats:(isFinite(seats)&&seats>0)?seats:0};
+}
+
+function render(){
+  var a=current, demo=currentDemo, inp=inputs();
+  var h="";
+  if(demo) h+='<div class="callout"><p><strong>Synthetic data.</strong> These figures '+
+    'are invented to show the report\'s shape. No file was read.</p></div>';
+
+  h+='<h2>Summary</h2><div class="tiles">'+
+    tile("Members with spend",fmt(a.users.length))+
+    tile("Net spend",usd(a.totalNet))+
+    (a.grossKnown?tile("Gross spend",usd(a.totalGross)):"")+
+    (a.grossKnown&&a.discounts>0?tile("Discounts and credits",usd(a.discounts)):"")+
+    (a.requestsKnown?tile("Requests",fmt(a.requests)):"")+
+    (a.tokensKnown?tile("Prompt tokens",fmt(a.prompt)):"")+
+    (a.tokensKnown?tile("Completion tokens",fmt(a.completion)):"")+
+    (a.orgService.rows?tile("Organization service usage",usd(a.orgService.net),"not attributed to a member"):"")+
+  '</div>';
+  h+='<p class="note" style="margin-top:.7rem">'+fmt(a.rowsUsed)+' member rows read, summed over '+
+    'whatever period was chosen at export'+
+    (a.noModel.rows?'; '+fmt(a.noModel.rows)+' row'+(a.noModel.rows>1?'s':'')+' with no model skipped, carrying '+usd(a.noModel.net):'')+
+    (a.skippedNoUser?'; '+fmt(a.skippedNoUser)+' row'+(a.skippedNoUser>1?'s':'')+' with no member skipped':'')+'.</p>';
+
+  h+='<h2>Concentration</h2>';
+  h+=meter("Share of net spend drawn by the heaviest 10% of members",pct(a.top10),a.top10);
+  h+=meter("Share of net spend drawn by the heaviest 20% of members",pct(a.top20),a.top20);
+  h+='<div class="tiles">'+
+    tile("Median member",usd(a.median))+
+    tile("Heaviest member",usd(a.heaviest))+
+    (inp.seats?tile("Seats with no spend",fmt(Math.max(0,inp.seats-a.users.length)),"of "+fmt(inp.seats)+" typed"):"")+
+  '</div>';
+  if(!inp.seats) h+='<p class="note" style="margin-top:.7rem">Type a seat count above to see '+
+    'how many seats had no usage-credit spend in the period. The export lists only members '+
+    'who spent.</p>';
+
+  h+='<h2>Against the per-member limit</h2>';
+  if(inp.limit){
+    var over=a.users.filter(function(u){return u.net>=inp.limit});
+    var near=a.users.filter(function(u){return u.net>=inp.limit*0.8&&u.net<inp.limit});
+    var overBy=over.reduce(function(s,u){return s+(u.net-inp.limit)},0);
+    h+='<div class="callout'+(over.length?' warn':'')+'"><p>'+
+      (over.length?'<span class="flag">⚠ At or over</span> '+fmt(over.length)+' member'+(over.length>1?'s':'')+
+        ' reached the '+usd(inp.limit)+' limit you typed'+(overBy>0?', exceeding it by '+usd(overBy)+' in total':'')+'.':
+        'No member reached the '+usd(inp.limit)+' limit you typed.')+
+      (near.length?' '+fmt(near.length)+' more '+(near.length>1?'are':'is')+' at 80% or more of it.':'')+
+      '</p><p class="note">A member past their limit cannot use Claude, Cowork or Claude Code '+
+      'until the next billing period, per the vendor\'s documentation. This report cannot see '+
+      'the limit each member actually has; it compares every member with the one value you typed.</p></div>';
+  } else {
+    h+='<p class="note">Type the per-member monthly spend limit your organization uses above '+
+      'to see who is at or over it, and who is at 80% or more of it.</p>';
+  }
+
+  h+='<h2>Spend by member</h2>';
+  var top=a.users.slice(0,25);
+  h+=bars(top.map(function(u){return{name:u.user,v:u.net,u:u}}),a.users[0].net,
+    function(it){return usd(it.v)},
+    function(it){return inp.limit>0&&it.u.net>=inp.limit},"at or over the typed limit");
+  if(a.users.length>25) h+='<p class="note">Showing the 25 heaviest of '+
+    fmt(a.users.length)+' members.'+(inp.limit?' ⚠ marks a member at or over the limit you typed.':'')+
+    ' All members are listed in the table below.</p>';
+
+  if(a.products.length>1){
+    h+='<h2>Net spend by product</h2>';
+    h+=bars(a.products,a.products[0].v,function(it){return usd(it.v)});
+  }
+  if(a.models.length>1){
+    h+='<h2>Net spend by model</h2>';
+    h+=bars(a.models.slice(0,12),a.models[0].v,function(it){return usd(it.v)});
+  }
+
+  h+='<details><summary>All members as a table</summary><table class="data"><thead><tr>'+
+    '<th>Member</th><th class="n">Net spend</th>'+(a.grossKnown?'<th class="n">Gross</th>':'')+
+    (a.requestsKnown?'<th class="n">Requests</th>':'')+
+    (a.tokensKnown?'<th class="n">Prompt tokens</th><th class="n">Completion tokens</th>':'')+
+    '<th class="n">Share</th>'+(inp.limit?'<th>Status</th>':'')+'</tr></thead><tbody>';
+  a.users.forEach(function(u){
+    h+='<tr><td>'+esc(u.user)+'</td><td class="n">'+usd(u.net)+'</td>'+
+      (a.grossKnown?'<td class="n">'+usd(u.gross)+'</td>':'')+
+      (a.requestsKnown?'<td class="n">'+fmt(u.requests)+'</td>':'')+
+      (a.tokensKnown?'<td class="n">'+fmt(u.prompt)+'</td><td class="n">'+fmt(u.completion)+'</td>':'')+
+      '<td class="n">'+(a.totalNet>0?pct(u.net/a.totalNet):'—')+'</td>'+
+      (inp.limit?'<td>'+(u.net>=inp.limit?'⚠ At or over':(u.net>=inp.limit*0.8?'80% or more':'—'))+'</td>':'')+
+      '</tr>';
+  });
+  h+='</tbody></table></details>';
+
+  if(a.missingUseful.length) h+='<p class="note" style="margin-top:1.5rem">Columns not '+
+    'present in this file, whose figures were omitted rather than estimated: '+
+    esc(a.missingUseful.join(", "))+'.</p>';
+
+  h+='<p style="margin-top:2rem"><button id="again">Read another file</button></p>';
+  $("#report").innerHTML=h;
+  $("#report").hidden=false;
+  $("#controls").hidden=false;
+  $("#problem").hidden=true;
+  $("#again").addEventListener("click",function(){
+    $("#report").hidden=true; $("#controls").hidden=true; $("#drop").hidden=false;
+    current=null; window.scrollTo(0,0);
+  });
+  $("#drop").hidden=true;
+}
+function problem(msg){
+  $("#problem").innerHTML='<div class="callout err"><p><strong>That file could not be '+
+    'read.</strong></p><p>'+esc(msg)+'</p></div>';
+  $("#problem").hidden=false; $("#report").hidden=true; $("#controls").hidden=true;
+}
+
+function handle(text,demo){
+  try{ current=analyse(parseCSV(text)); currentDemo=!!demo; render() }
+  catch(e){ current=null; problem(e.message) }
+}
+
+/* ---- synthetic data --------------------------------------------------- */
+function demoCSV(){
+  var models=["claude-sonnet-5","claude-opus-5","claude-haiku-4-5","claude-fable-5-1"];
+  var families=["Sonnet","Opus","Haiku","Fable"];
+  var rates=[[3,15],[15,75],[1,5],[10,50]];
+  var products=["Claude Code","Chat","Cowork","Office Agents"];
+  var out=["user_email,account_uuid,product,model,model_family,total_requests,"+
+           "total_prompt_tokens,total_completion_tokens,total_net_spend_usd,total_gross_spend_usd"];
+  var seed=11, rnd=function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  var hex=function(){var s="";for(var i=0;i<32;i++)s+="0123456789abcdef"[Math.floor(rnd()*16)];return s};
+  for(var u=1;u<=64;u++){
+    var name="dev-"+String(u).padStart(3,"0")+"@example.com";
+    var id=hex();
+    /* heavy tail: a few large spenders, a long thin body */
+    var scale=u<=6?260+rnd()*520:(u<=20?60+rnd()*140:6+rnd()*40);
+    var n=1+Math.floor(rnd()*3);
+    for(var k=0;k<n;k++){
+      var mi=Math.floor(rnd()*models.length);
+      var p=rnd()<0.7?products[0]:products[1+Math.floor(rnd()*3)];
+      var spend=scale/n*(0.6+rnd()*0.8);
+      var inTok=Math.round(spend/((rates[mi][0]+rates[mi][1]*0.25)/1e6)*0.8);
+      var outTok=Math.round(inTok*0.25);
+      var reqs=Math.max(1,Math.round(inTok/9000));
+      var gross=spend*(1+(rnd()<0.3?0.1:0));
+      out.push([name,id,p,models[mi],families[mi],reqs,inTok,outTok,spend.toFixed(2),gross.toFixed(2)].join(","));
+    }
+  }
+  out.push(["(org service usage)","","Claude Code","claude-sonnet-5","Sonnet",120,2400000,300000,"14.40","14.40"].join(","));
+  return out.join("\n");
+}
+
+/* ---- wiring ----------------------------------------------------------- */
+var drop=$("#drop"),file=$("#file");
+$("#pick").addEventListener("click",function(){file.click()});
+$("#demo").addEventListener("click",function(){handle(demoCSV(),true)});
+$("#limit").addEventListener("input",function(){if(current)render()});
+$("#seats").addEventListener("input",function(){if(current)render()});
+file.addEventListener("change",function(){
+  if(file.files&&file.files[0])read(file.files[0]);
+});
+["dragenter","dragover"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",function(ev){
+  var f=ev.dataTransfer&&ev.dataTransfer.files&&ev.dataTransfer.files[0];
+  if(f)read(f);
+});
+function read(f){
+  var fr=new FileReader();
+  fr.onload=function(){handle(String(fr.result),false)};
+  fr.onerror=function(){problem("The browser could not read that file.")};
+  fr.readAsText(f);
+}
+})();
+</script>
+</body>
+</html>
