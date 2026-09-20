@@ -1,0 +1,96 @@
+Member,Seat type,Period,Product,Model,Credits used,Included allowance
+dev-002,Premium,2026-09-10,Agent,medium,776,5000
+dev-017,Standard,2026-09-04,Agent,small-fast,12,1000
+dev-026,Standard,2026-09-01,Chat,large-reasoning,28,1000
+dev-028,Standard,2026-09-04,Agent,medium,4,1000
+dev-003,Premium,2026-09-12,Agent,small-fast,987,5000
+dev-020,Standard,2026-09-14,Agent,large-reasoning,20,1000
+dev-006,Standard,2026-09-01,Chat,large-reasoning,174,1000
+dev-012,Standard,2026-09-10,Agent,large-reasoning,403,1000
+dev-017,Standard,2026-09-01,Agent,small-fast,20,1000
+dev-012,Standard,2026-09-01,Agent,medium,338,1000
+dev-010,Standard,2026-09-13,Agent,small-fast,288,1000
+dev-020,Standard,2026-09-04,Agent,large-reasoning,16,1000
+dev-001,Premium,2026-09-10,"Agent, cloud",small-fast,3147,5000
+dev-025,Standard,2026-09-05,Chat,medium,27,1000
+dev-019,Standard,2026-09-13,"Agent, cloud",medium,35,1000
+dev-024,Standard,2026-09-02,Tab completions,small-fast,34,1000
+dev-022,Standard,2026-09-02,Chat,large-reasoning,17,1000
+dev-028,Standard,2026-09-07,Agent,medium,3,1000
+dev-011,Standard,2026-09-11,Agent,medium,355,1000
+dev-016,Standard,2026-09-03,Chat,medium,4,1000
+dev-018,Standard,2026-09-04,Tab completions,large-reasoning,6,1000
+dev-023,Standard,2026-09-01,Agent,medium,15,1000
+dev-005,Standard,2026-09-10,Chat,medium,330,1000
+dev-006,Standard,2026-09-07,"Agent, cloud",small-fast,141,1000
+dev-006,Standard,2026-09-09,Chat,small-fast,231,1000
+dev-011,Standard,2026-09-06,Agent,small-fast,234,1000
+dev-032,Standard,2026-09-13,Agent,medium,0,1000
+dev-022,Standard,2026-09-13,Agent,large-reasoning,16,1000
+dev-026,Standard,2026-09-01,Agent,medium,38,1000
+dev-027,Standard,2026-09-13,Agent,large-reasoning,8,1000
+dev-009,Standard,2026-09-06,"Agent, cloud",small-fast,214,1000
+dev-015,Standard,2026-09-02,Agent,medium,9,1000
+dev-023,Standard,2026-09-01,Agent,large-reasoning,23,1000
+dev-003,Premium,2026-09-09,Agent,medium,630,5000
+dev-024,Standard,2026-09-04,"Agent, cloud",small-fast,31,1000
+dev-020,Standard,2026-09-08,Agent,small-fast,17,1000
+dev-029,Standard,2026-09-14,Tab completions,medium,8,1000
+dev-028,Standard,2026-09-03,Tab completions,large-reasoning,4,1000
+dev-007,Standard,2026-09-08,Tab completions,medium,328,1000
+dev-019,Standard,2026-09-03,Agent,medium,18,1000
+dev-025,Standard,2026-09-01,Agent,medium,26,1000
+dev-014,Standard,2026-09-02,Agent,large-reasoning,20,1000
+dev-021,Standard,2026-09-10,Tab completions,small-fast,27,1000
+dev-026,Standard,2026-09-10,Agent,large-reasoning,48,1000
+dev-006,Standard,2026-09-10,Agent,large-reasoning,181,1000
+dev-014,Standard,2026-09-03,Agent,medium,24,1000
+dev-008,Standard,2026-09-04,Agent,medium,292,1000
+dev-021,Standard,2026-09-06,"Agent, cloud",small-fast,39,1000
+dev-017,Standard,2026-09-09,Agent,large-reasoning,18,1000
+dev-004,Standard,2026-09-12,"Agent, cloud",large-reasoning,715,1000
+dev-002,Premium,2026-09-08,Chat,medium,928,5000
+dev-003,Premium,2026-09-06,Tab completions,small-fast,1213,5000
+dev-013,Standard,2026-09-01,"Agent, cloud",small-fast,179,1000
+dev-024,Standard,2026-09-11,Chat,medium,38,1000
+dev-016,Standard,2026-09-11,Agent,medium,3,1000
+dev-015,Standard,2026-09-11,Agent,large-reasoning,15,1000
+dev-018,Standard,2026-09-03,Chat,medium,7,1000
+dev-023,Standard,2026-09-01,Agent,large-reasoning,17,1000
+dev-014,Standard,2026-09-13,"Agent, cloud",small-fast,22,1000
+dev-027,Standard,2026-09-13,Agent,small-fast,16,1000
+dev-031,Standard,2026-09-14,Agent,medium,0,1000
+dev-022,Standard,2026-09-11,Tab completions,medium,17,1000
+dev-014,Standard,2026-09-10,Tab completions,medium,22,1000
+dev-028,Standard,2026-09-09,"Agent, cloud",medium,4,1000
+dev-011,Standard,2026-09-03,Tab completions,medium,258,1000
+dev-002,Premium,2026-09-08,Tab completions,medium,1155,5000
+dev-005,Standard,2026-09-09,Tab completions,medium,422,1000
+dev-007,Standard,2026-09-02,"Agent, cloud",small-fast,485,1000
+dev-013,Standard,2026-09-13,Chat,large-reasoning,344,1000
+dev-030,Standard,2026-09-14,Agent,small-fast,0,1000
+dev-015,Standard,2026-09-07,Agent,large-reasoning,8,1000
+dev-004,Standard,2026-09-14,"Agent, cloud",medium,465,1000
+dev-009,Standard,2026-09-10,Tab completions,medium,115,1000
+dev-002,Premium,2026-09-08,Agent,small-fast,1184,5000
+dev-029,Standard,2026-09-09,"Agent, cloud",large-reasoning,11,1000
+dev-023,Standard,2026-09-05,Chat,medium,23,1000
+dev-029,Standard,2026-09-01,Tab completions,small-fast,20,1000
+dev-001,Premium,2026-09-09,Chat,large-reasoning,2203,5000
+dev-022,Standard,2026-09-05,Chat,large-reasoning,12,1000
+dev-008,Standard,2026-09-05,Agent,small-fast,318,1000
+dev-019,Standard,2026-09-14,Agent,medium,24,1000
+dev-027,Standard,2026-09-11,"Agent, cloud",large-reasoning,8,1000
+dev-008,Standard,2026-09-08,"Agent, cloud",medium,283,1000
+dev-010,Standard,2026-09-14,Agent,medium,260,1000
+dev-015,Standard,2026-09-04,Agent,large-reasoning,10,1000
+dev-025,Standard,2026-09-14,Agent,small-fast,19,1000
+dev-021,Standard,2026-09-13,Agent,large-reasoning,33,1000
+dev-024,Standard,2026-09-14,Agent,medium,48,1000
+dev-029,Standard,2026-09-01,Chat,medium,14,1000
+dev-027,Standard,2026-09-03,Agent,medium,8,1000
+dev-021,Standard,2026-09-09,Tab completions,large-reasoning,25,1000
+dev-016,Standard,2026-09-10,Agent,small-fast,3,1000
+dev-017,Standard,2026-09-03,Agent,small-fast,17,1000
+dev-010,Standard,2026-09-01,"Agent, cloud",medium,269,1000
+dev-016,Standard,2026-09-08,Tab completions,small-fast,4,1000

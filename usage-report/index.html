@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Usage report</title>
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --border:#e4e4e1; --border-strong:#c9c9c4;
+  --ink:#1c1c1a; --ink-2:#55554f; --ink-3:#84847c;
+  --mark:#2f6f6a; --mark-soft:#d5e6e4; --track:#eeeeeb;
+  --warn:#8a5a00; --warn-soft:#f6ead2;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#161614; --surface:#1e1e1c; --border:#33332f; --border-strong:#4a4a44;
+  --ink:#f0efe9; --ink-2:#b4b4ac; --ink-3:#84847c;
+  --mark:#6fbfb6; --mark-soft:#24403d; --track:#2a2a26;
+  --warn:#e0b063; --warn-soft:#3a2f18;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--sans);
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+h1{font-size:1.5rem;margin:0 0 .35rem;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:2.5rem 0 .85rem;letter-spacing:-.005em}
+h3{font-size:.95rem;margin:1.4rem 0 .5rem}
+.sub{color:var(--ink-2);margin:0 0 2rem;max-width:44rem}
+.note{color:var(--ink-3);font-size:.83rem}
+code{font-family:var(--mono);font-size:.88em;background:var(--track);
+  padding:.1em .35em;border-radius:3px}
+
+/* ---- intake ---------------------------------------------------------- */
+#drop{border:1.5px dashed var(--border-strong);border-radius:10px;background:var(--surface);
+  padding:2.25rem 1.5rem;text-align:center;transition:border-color .12s,background .12s}
+#drop.over{border-color:var(--mark);background:var(--mark-soft)}
+#drop p{margin:0 0 1rem;color:var(--ink-2)}
+#drop p.note{margin:1rem 0 0}
+button{font:inherit;font-size:.9rem;padding:.5rem .95rem;border-radius:7px;
+  border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);
+  cursor:pointer}
+button:hover{border-color:var(--mark);color:var(--mark)}
+button.primary{background:var(--mark);border-color:var(--mark);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) button.primary{color:#10201e}}
+button.primary:hover{opacity:.9;color:#fff}
+button.link{border:0;background:none;padding:0;color:var(--mark);text-decoration:underline;
+  text-underline-offset:.18em;font-size:inherit}
+.actions{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+select:focus-visible,input:focus-visible,button:focus-visible,textarea:focus-visible,
+[tabindex]:focus-visible,summary:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+
+/* ---- files ------------------------------------------------------------ */
+.files ul{list-style:none;padding:0;margin:.5rem 0 0}
+.files li{display:flex;gap:.75rem;align-items:center;padding:.4rem 0;
+  border-bottom:1px solid var(--border);font-size:.88rem}
+.files li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files li .meta{color:var(--ink-3);font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.files li button{font-size:.8rem;padding:.25rem .6rem}
+
+/* ---- mapper and typed inputs ------------------------------------------ */
+.mapgrid,.inputs{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));
+  background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:1rem 1.1rem}
+.inputs{margin:1.5rem 0 0}
+.mapgrid label,.inputs label{display:block;font-size:.8rem;color:var(--ink-2);margin-bottom:.35rem}
+.mapgrid select,.inputs select,.inputs input{font:inherit;font-size:.95rem;width:100%;
+  padding:.45rem .6rem;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--bg);color:var(--ink)}
+.inputs input{font-family:var(--mono)}
+.inputs .hint{grid-column:1/-1;margin:0;font-size:.8rem;color:var(--ink-3)}
+.tag{display:inline-block;border:1px solid var(--border-strong);border-radius:4px;
+  padding:0 .35em;font-size:.72rem;line-height:1.5;color:var(--ink-2);vertical-align:middle;
+  white-space:nowrap}
+.tag.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.tag.low{background:var(--track)}
+table.preview td,table.preview th{font-family:var(--mono);font-size:.8rem}
+
+/* ---- stat tiles ------------------------------------------------------ */
+.tiles{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:1rem 1.1rem}
+.tile .k{font-size:.76rem;color:var(--ink-3);letter-spacing:.02em;margin-bottom:.3rem}
+.tile .v{font-family:var(--mono);font-size:1.35rem;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.tile .v small{font-size:.6em;color:var(--ink-3);letter-spacing:0}
+
+/* ---- meters ---------------------------------------------------------- */
+.meter{margin:.9rem 0 1.3rem}
+.meter .lab{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem;
+  margin-bottom:.4rem}
+.meter .lab b{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums}
+.track{height:10px;background:var(--track);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--mark);border-radius:4px;min-width:2px}
+
+/* ---- bars ------------------------------------------------------------ */
+table.bars{width:100%;border-collapse:separate;border-spacing:0 2px}
+table.bars td{padding:0;vertical-align:middle}
+table.bars td.name{width:14rem;padding-right:.75rem;font-size:.86rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.bars td.plot{width:auto}
+table.bars td.val{width:9rem;text-align:right;padding-left:.75rem;font-family:var(--mono);
+  font-size:.83rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.bar{height:14px;background:var(--mark);border-radius:0 4px 4px 0;min-width:2px}
+tr.over .bar{background:var(--warn)}
+tr.low .bar{background:var(--ink-3)}
+tr:hover td{background:var(--track)}
+
+/* ---- callouts ---------------------------------------------------------- */
+.flag{display:inline-flex;align-items:center;gap:.4rem;background:var(--warn-soft);
+  color:var(--warn);border-radius:6px;padding:.15rem .5rem;font-size:.8rem}
+.callout{border:1px solid var(--border);border-left:3px solid var(--mark);
+  background:var(--surface);border-radius:0 8px 8px 0;padding:1rem 1.15rem;margin:1.25rem 0}
+.callout.warn{border-left-color:var(--warn)}
+.callout p{margin:0 0 .5rem}.callout p:last-child{margin:0}
+.err{border-left-color:var(--warn)}
+
+/* ---- misc ------------------------------------------------------------ */
+table.data{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem}
+table.data th,table.data td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid var(--border)}
+table.data th{color:var(--ink-3);font-weight:500;font-size:.78rem}
+table.data td.n,table.data th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+details{margin-top:.6rem}summary{cursor:pointer;font-size:.86rem;color:var(--ink-2)}
+textarea.sum{width:100%;min-height:16rem;font:inherit;font-family:var(--mono);font-size:.8rem;
+  line-height:1.45;padding:.6rem .7rem;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--surface);color:var(--ink);resize:vertical}
+.guide h3{margin-top:1.6rem}
+.guide p{margin:0 0 .6rem;max-width:48rem}
+.guide p.refs{font-size:.85rem;color:var(--ink-2)}
+[hidden]{display:none!important}
+footer{margin-top:4rem;padding-top:1.25rem;border-top:1px solid var(--border);
+  color:var(--ink-3);font-size:.82rem}
+a{color:var(--mark);text-decoration:underline;text-underline-offset:.18em}
+a:hover{color:var(--ink)}
+a:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Usage report</h1>
+<p class="sub">Reads a per-member usage CSV from GitHub Copilot, Claude Code, Cursor,
+Codex or any other vendor and shows how usage is distributed: how much the heaviest
+fifth of members draws, who is at or over an allowance, whose allowance went unused,
+and how many seats recorded no usage. Two exports are recognized by their header row.
+Any other file goes through a column mapper that you confirm. The files are parsed in
+this page. Nothing is uploaded and this page makes no network requests of any kind.</p>
+
+<div id="drop">
+  <p>Drop one or more CSV files here, or</p>
+  <div class="actions">
+    <button class="primary" id="pick">Choose files</button>
+    <button id="demo">Use synthetic data</button>
+  </div>
+  <p class="note">Files up to 20 MB each. Several files are combined when their header
+  rows are identical, and a file can be added to the set at any time.</p>
+  <input type="file" id="file" accept=".csv,text/csv" multiple hidden>
+</div>
+
+<div id="problem" aria-live="polite" hidden></div>
+
+<section id="files" class="files" hidden>
+  <h2>Files</h2>
+  <ul id="filelist"></ul>
+  <p id="dups" class="note"></p>
+</section>
+
+<section id="mapper" hidden>
+  <h2 id="mapper-top" tabindex="-1">Choose the columns</h2>
+  <p>This file's header row matches no verified export, so nothing is assumed about
+  it. Choose the column that names the member and the column that carries the
+  amount. Date, allowance, product, model and seat type are optional. A choice marked
+  pre-selected was matched by its header name and still needs your confirmation; the
+  report is drawn only when you choose to draw it.</p>
+  <div class="mapgrid" id="mapgrid"></div>
+  <h3>The first rows of the chosen columns</h3>
+  <div id="preview" class="scroll"></div>
+  <div id="map-problem" aria-live="polite"></div>
+  <p><button class="primary" id="map-confirm">Draw the report</button></p>
+</section>
+
+<div id="controls" class="inputs" hidden>
+  <div>
+    <label for="vendor">Vendor, which chooses the page the report refers to</label>
+    <select id="vendor">
+      <option value="">Not chosen</option>
+      <option value="copilot">GitHub Copilot</option>
+      <option value="claude">Claude Code</option>
+      <option value="cursor">Cursor</option>
+      <option value="codex">Codex</option>
+    </select>
+  </div>
+  <div>
+    <label for="allow">Per-member allowance or limit, in the amount column's unit</label>
+    <input type="number" id="allow" min="0" step="any" inputmode="decimal" placeholder="for example 1900">
+  </div>
+  <div>
+    <label for="share">Unused when a member is below this share of the allowance (%)</label>
+    <input type="number" id="share" min="0" max="100" step="1" inputmode="numeric" value="20">
+  </div>
+  <div>
+    <label for="seats">Seats in the organization</label>
+    <input type="number" id="seats" min="0" step="1" inputmode="numeric" placeholder="for example 120">
+  </div>
+  <div>
+    <label for="unit">Unit of the amount column</label>
+    <input type="text" id="unit" placeholder="for example credits">
+  </div>
+  <div>
+    <label for="rate">Dollars per unit, optional</label>
+    <input type="number" id="rate" min="0" step="any" inputmode="decimal" placeholder="blank unless a source states it">
+  </div>
+  <p class="hint">These values are yours, typed here. A typed allowance overrides an
+  allowance column. The seat count is not in any export, so the seats it infers are
+  labeled as inferred. The dollar rate stays blank unless a recognized export carries a
+  value with a cited source; none does at present, and a rate you type is shown beside
+  every converted figure as the rate you typed.</p>
+</div>
+
+<div id="report" hidden></div>
+
+<section class="guide" id="guide">
+  <h2>Where each vendor's export comes from, and what it does not carry</h2>
+  <p>Each statement below is written from the vendor documentation it links. The two
+  vendor tools published beside this one, the Copilot billing report and the Claude
+  spend report, read the same two files with the same verified presets. No Cursor or
+  Codex export has been verified yet, so those files go through the column mapper, and
+  a preset for either is added only after a real export or the vendor's documented
+  column list has confirmed the header row.</p>
+
+  <h3>GitHub Copilot</h3>
+  <p><strong>Where it comes from.</strong> An organization owner or billing manager
+  requests the billing usage report from GitHub under Settings &rarr; Billing &amp;
+  licensing &rarr; Usage. No token is needed. Since June 2026, consumption is metered in
+  AI credits pooled at the billing entity, at one credit per cent, and the pool resets
+  on the first of each month with unused credits forfeited.</p>
+  <p><strong>What it does not carry.</strong> The billing usage CSV is recognized here by
+  its header row and carries each user's recorded monthly quota, so the allowance tiles
+  come from the file. It is not the Copilot activity report, which lists seat activity
+  with no consumption figures; that file is named and refused. The usage dashboard and
+  the metrics API are a different view of the same activity, updated within two full
+  days, dependent on telemetry being enabled in each developer's IDE, and excluding
+  Copilot Chat on GitHub.com and GitHub Mobile.</p>
+  <p class="refs">Sources: GitHub Docs,
+  <a href="https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises" rel="noopener">Usage-based billing for organizations and enterprises</a>;
+  GitHub Docs, <a href="https://docs.github.com/copilot/concepts/copilot-metrics" rel="noopener">Copilot metrics and the usage dashboard</a>.</p>
+
+  <h3>Claude Code</h3>
+  <p><strong>Where it comes from.</strong> An Owner or Primary Owner exports the spend
+  report from claude.ai under Settings &rarr; Analytics &rarr; &ldquo;How much is Claude
+  costing?&rdquo; &rarr; Export spend report, choosing month to date, last month, the
+  last 90 days or a custom range. The export lists each member's use of each model with
+  requests, prompt and completion tokens, and net and gross spend, summed over the
+  window. Spend data refreshes daily with a one-day delay. On Enterprise plans, Admins
+  can open Analytics but cannot view spend, so they cannot export this file.</p>
+  <p><strong>What it does not carry.</strong> On Team and seat-based Enterprise plans
+  the spend report covers usage-credit spend only, which appears once usage credits are
+  turned on, so it reads who is buying past the seat allowance and how much, not
+  consumption inside it, because usage inside the allowance is not metered in dollars.
+  The file has no date column and no per-member limit; a limit you type is compared
+  with every member. The Claude Code analytics export under Analytics &rarr; Claude
+  Code carries member emails and lines of code with no spend, and this tool names it
+  and stops.</p>
+  <p class="refs">Sources: Claude Help Center,
+  <a href="https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans" rel="noopener">View usage analytics for Team and Enterprise plans</a>;
+  Claude Help Center, <a href="https://support.claude.com/en/articles/12005970-manage-usage-credits-for-team-and-seat-based-enterprise-plans" rel="noopener">Manage usage credits for Team and seat-based Enterprise plans</a>;
+  Claude Code Docs, <a href="https://code.claude.com/docs/en/costs" rel="noopener">Manage costs effectively</a>.</p>
+
+  <h3>Cursor</h3>
+  <p><strong>Where it comes from.</strong> On Teams, an Admin opens the dashboard's
+  analytics: a daily usage chart over the preceding 365 days with a CSV download per
+  chart, filtered to at most ten users and 90 continuous days at a time, with data
+  collected only from clients on version 1.5 or higher. Members have no access to the
+  admin dashboard. On Enterprise, the Admin API returns per-user on-demand spend in
+  cents, total spend including included usage, daily per-user usage over at most 30
+  days and per-request usage events; it needs an API key and is not called by this
+  page.</p>
+  <p><strong>What it does not carry.</strong> One chart at a time and ten users per
+  filter means a team of forty is at least four files, exported from the same chart
+  with the same columns. Drop them together: this tool combines files whose header rows
+  are identical and counts any row that appears in more than one file, though two
+  exports that overlap without a date column cannot be told apart beyond exact
+  duplicates. No Cursor export has been verified against this tool, so the mapper opens
+  and you confirm which column is the member and which is the amount. Included usage
+  and on-demand spend are separate figures in Cursor's dashboard; label the unit with
+  whichever the chart you exported shows.</p>
+  <p class="refs">Sources: Cursor Docs,
+  <a href="https://cursor.com/docs/account/teams/analytics" rel="noopener">Analytics</a>;
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/admin-api" rel="noopener">Admin API</a>;
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/members" rel="noopener">Members, Roles, and Seat Types</a>;
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/pricing" rel="noopener">Team Pricing</a>.</p>
+
+  <h3>Codex</h3>
+  <p><strong>Where it comes from.</strong> On ChatGPT Business, workspace analytics
+  shows usage by member, including seat type, credits spent and messages sent, over
+  seven days, one month, six months, twelve months or a custom window, and Owners
+  download usage reports under Billing. On Enterprise, the Admin Console breaks credit
+  spend down by user, product and model, with a Cost API and CSV exports covering up to
+  twelve months, with data lagging by one to 24 hours.</p>
+  <p><strong>What it does not carry.</strong> Usage inside a seat's five-hour and weekly
+  windows is not metered in dollars; only usage past them draws credits, at a rate card
+  in credits per million tokens. What a credit costs in dollars depends on the plan or
+  agreement, and no cited page prices a Business credit, so this tool never supplies a
+  dollar rate for Codex credits; type one only if your agreement states it. No Codex
+  export has been verified against this tool, so the mapper opens; documented column
+  names such as seat type and credits spent are pre-selected when they match, and you
+  confirm each choice.</p>
+  <p class="refs">Sources: OpenAI Help Center,
+  <a href="https://help.openai.com/en/articles/11391654-chatgpt-business-release-notes" rel="noopener">ChatGPT Business Release Notes</a>;
+  OpenAI Help Center, <a href="https://help.openai.com/en/articles/11487671-flexible-pricing-for-the-enterprise-edu-and-business-plans" rel="noopener">Flexible pricing for the Enterprise, Edu, and Business plans</a>;
+  OpenAI, <a href="https://openai.com/index/chatgpt-enterprise-spend-controls/" rel="noopener">New usage analytics and updated spend controls for enterprises</a>;
+  OpenAI Help Center, <a href="https://help.openai.com/en/articles/10875114" rel="noopener">Workspace analytics for ChatGPT Enterprise and Edu</a>;
+  OpenAI Help Center, <a href="https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing" rel="noopener">ChatGPT Rate Card (Business, Enterprise/Edu credit-based pricing)</a>;
+  ChatGPT Learn, <a href="https://learn.chatgpt.com/docs/pricing" rel="noopener">Pricing</a>.</p>
+</section>
+
+<footer>
+  <p><strong>Hosted or local, your choice.</strong> This page is served from GitHub
+  Pages, directly out of the public repository
+  <code>github.com/OpticNerveAI/spillwayops-tools</code>, so the source it runs is the
+  source you can read there. You can also save this file and open it from your own
+  disk; it behaves identically offline, and a copy you have read cannot change under
+  you.</p>
+  <p>MIT licensed. Copyright &copy; 2026 Optic Nerve AI, LLC.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})};
+var fmtInt=function(n){return Math.round(n).toLocaleString("en-US")};
+var fmt2=function(n){return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})};
+var usd=function(n){return (n<0?"-$":"$")+fmt2(Math.abs(n))};
+var pct=function(n){return (n*100).toFixed(1)+" %"};
+var ord=function(n){var s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+var plural=function(n,one,many){return n===1?one:(many||one+"s")};
+var size=function(b){return b<1048576?Math.max(1,Math.round(b/1024))+" KB":(b/1048576).toFixed(1)+" MB"};
+var LIMIT=20*1048576;
+var SITE="https://www.spillwayops.com/";
+var VENDORS={
+  copilot:{name:"GitHub Copilot",path:"premium-requests/",
+    title:"GitHub Copilot premium requests and AI credits, explained"},
+  claude:{name:"Claude Code",path:"claude-code-usage-limits/",
+    title:"Claude Code usage limits and credits on Team and Enterprise plans, explained"},
+  cursor:{name:"Cursor",path:"cursor-usage-limits/",
+    title:"Cursor usage limits, included usage and on-demand pricing on Teams and Enterprise, explained"},
+  codex:{name:"Codex",path:"codex-usage-limits/",
+    title:"OpenAI Codex usage limits, credits and plans on Business and Enterprise, explained"}
+};
+
+/* ---- CSV parse (RFC4180: quoted fields, embedded commas, "" escapes) --- */
+function parseCSV(text){
+  text=text.replace(/^﻿/,"");
+  var rows=[],row=[],f="",q=false,i=0,c,n;
+  for(;i<text.length;i++){
+    c=text[i];
+    if(q){
+      if(c==='"'){ n=text[i+1]; if(n==='"'){f+='"';i++} else {q=false} }
+      else f+=c;
+    } else if(c==='"'){ q=true }
+    else if(c===","){ row.push(f); f="" }
+    else if(c==="\n"||c==="\r"){
+      if(c==="\r"&&text[i+1]==="\n")i++;
+      row.push(f); f="";
+      if(row.length>1||row[0]!=="")rows.push(row);
+      row=[];
+    } else f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+
+/* ---- numbers: a cell parses or it does not; nothing is coerced --------- */
+function parseNum(v){
+  var s=String(v==null?"":v).trim();
+  if(s==="")return {empty:true,n:0};
+  var neg=false;
+  if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1).trim()}
+  s=s.replace(/^[$€£]\s*|\s*[$€£]$/g,"");
+  if(/^[+-]?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s))s=s.replace(/,/g,"");
+  if(!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s))return {fail:true};
+  var n=parseFloat(s);
+  if(!isFinite(n))return {fail:true};
+  return {n:neg?-n:n};
+}
+
+/* ---- headers ------------------------------------------------------------ */
+var hnorm=function(h){return String(h==null?"":h).replace(/^﻿/,"").trim()};
+var hkey=function(h){return hnorm(h).toLowerCase()};
+var hloose=function(h){return hkey(h).replace(/[_\-.\s]+/g," ").trim()};
+function idxOf(head){var idx={};head.forEach(function(h,i){var k=hkey(h);if(!(k in idx))idx[k]=i});return idx}
+function ix(idx,name){return (name in idx)?idx[name]:-1}
+function alias(idx,list){for(var a=0;a<list.length;a++){if(list[a] in idx)return idx[list[a]]}return -1}
+function base(){return {member:-1,amount:-1,date:-1,allowance:-1,product:-1,model:-1,seat:-1}}
+
+/* Header names of the two verified exports, as the two vendor tools beside
+   this one read them. Copied from copilot-billing-report and
+   claude-spend-report; the first alias found wins. */
+var COPILOT_REQUIRED=["username","quantity","unit_type"];
+var COPILOT_USEFUL=["date","product","model","exceeds_quota","total_monthly_quota",
+                    "aic_quantity","net_amount","organization","cost_center_name"];
+var CLAUDE_ALIASES={
+  user:      ["user_email","email","user","member_email","member","user email"],
+  account:   ["account_uuid","account_id","account uuid","uuid"],
+  product:   ["product"],
+  model:     ["model"],
+  family:    ["model_family","model family","family"],
+  requests:  ["total_requests","requests"],
+  prompt:    ["total_prompt_tokens","prompt_tokens","total_input_tokens","input_tokens"],
+  completion:["total_completion_tokens","completion_tokens","total_output_tokens","output_tokens"],
+  net:       ["total_net_spend_usd","net_spend_usd","total_net_spend","net_spend"],
+  gross:     ["total_gross_spend_usd","gross_spend_usd","total_gross_spend","gross_spend"]
+};
+
+/* Known exports from the same vendors that carry no usage amounts. Named
+   rather than reported as a missing column. */
+var WRONG=[
+  {test:function(idx,keys){return alias(idx,CLAUDE_ALIASES.net)<0&&keys.some(function(h){return /lines/.test(h)})},
+   message:"This looks like the Claude Code analytics export (member emails and lines of code), "+
+     "which carries no spend. This tool needs the spend report: in claude.ai, open Settings, "+
+     "then Analytics, then How much is Claude costing?, then Export spend report."},
+  {test:function(idx){return !("quantity" in idx)&&("last_activity_at" in idx||"last_surface_used" in idx)},
+   message:"This looks like the GitHub Copilot activity report (seat activity with no consumption "+
+     "figures). This tool needs the billing usage report: in GitHub, open Settings, then Billing "+
+     "& licensing, then Usage, then request a usage report."}
+];
+
+/* Verified exports. A preset is recognized by its header set and mapped
+   without asking. Only header sets read from real files are here. */
+var PRESETS=[
+  {id:"copilot",name:"GitHub Copilot billing usage CSV",vendor:"copilot",unit:"AI credits",
+   detect:function(idx){
+     return COPILOT_REQUIRED.every(function(c){return c in idx})&&
+       ["aic_quantity","total_monthly_quota","exceeds_quota"].some(function(c){return c in idx});
+   },
+   build:function(idx){
+     var m=base();
+     m.member=idx.username; m.amount=idx.quantity;
+     m.date=ix(idx,"date"); m.allowance=ix(idx,"total_monthly_quota"); m.model=ix(idx,"model");
+     m.amountCols=[];
+     if("aic_quantity" in idx)m.amountCols.push({name:"aic_quantity",col:idx.aic_quantity});
+     m.amountCols.push({name:"quantity",col:idx.quantity});
+     if("net_amount" in idx)m.dollars={col:idx.net_amount,name:"net_amount"};
+     m.skip=function(g){
+       if("product" in idx){var p=g(idx.product).toLowerCase();
+         if(p&&p.indexOf("copilot")===-1)return "product not Copilot"}
+       return null;
+     };
+     /* credits: prefer the explicit AI-credit column; else quantity when the row
+        is denominated in credits. Request-denominated rows are counted
+        separately and never silently added to a credit total. */
+     m.rowAmount=function(g,acc){
+       var aic=("aic_quantity" in idx)?g(idx.aic_quantity):"";
+       if(aic!=="")return parseNum(aic).n||0;
+       if(g(idx.unit_type).toLowerCase().indexOf("credit")!==-1)return parseNum(g(idx.quantity)).n||0;
+       acc.requests=(acc.requests||0)+(parseNum(g(idx.quantity)).n||0);
+       return 0;
+     };
+     m.extras=function(acc){
+       return acc.requests?[["Request-metered units",fmtInt(acc.requests),"counted separately, never added to credits"]]:[];
+     };
+     m.missing=COPILOT_USEFUL.filter(function(c){return !(c in idx)});
+     m.described="Read as: username as the member; AI credits from aic_quantity, or from "+
+       "quantity on rows denominated in credits, as the amount; total_monthly_quota as the "+
+       "allowance; model and date; and net_amount as the file's own dollar figure. Rows whose "+
+       "product is not Copilot are set aside, and request-metered rows are counted separately.";
+     return m;
+   }},
+  {id:"claude",name:"Claude spend report",vendor:"claude",unit:"USD",
+   detect:function(idx){
+     return alias(idx,CLAUDE_ALIASES.user)>=0&&alias(idx,CLAUDE_ALIASES.net)>=0&&
+       (alias(idx,CLAUDE_ALIASES.product)>=0||alias(idx,CLAUDE_ALIASES.model)>=0);
+   },
+   build:function(idx){
+     var m=base();
+     m.member=alias(idx,CLAUDE_ALIASES.user); m.amount=alias(idx,CLAUDE_ALIASES.net);
+     m.product=alias(idx,CLAUDE_ALIASES.product); m.model=alias(idx,CLAUDE_ALIASES.model);
+     m.skipCarriesAmount=true;
+     m.skip=function(g){
+       if(/org service usage/i.test(g(m.member)))return "organization service usage, not attributed to a member";
+       if(m.model>=0&&g(m.model)==="")return "no model";
+       return null;
+     };
+     m.missing=["product","model","requests","prompt","completion","gross"]
+       .filter(function(k){return alias(idx,CLAUDE_ALIASES[k])<0})
+       .map(function(k){return CLAUDE_ALIASES[k][0]});
+     m.described="Read as: user_email as the member, total_net_spend_usd as the amount, in "+
+       "dollars, and product and model. Organization service usage rows and rows with no "+
+       "model are set aside and reported.";
+     return m;
+   }}
+];
+
+/* Header names that pre-select a mapper choice. Generic names plus the
+   fields the vendor pages describe for Cursor and Codex exports (member,
+   seat type, credits spent, spend in cents). Matching pre-selects and never
+   recognizes; the reader confirms every choice. */
+var PRESELECT={
+  member:["member","member email","user email","email","user","username","user name","login",
+          "member name","user id","member id","account","person","developer","name"],
+  amount:["amount","credits","credits spent","credits used","credit usage","spend","spend cents",
+          "total spend","total spend cents","on demand spend cents","usage","usage credits",
+          "cost","total cost","net spend","net amount","total","tokens","total tokens",
+          "quantity","messages","messages sent","requests"],
+  date:["date","day","period","month","week","timestamp","time","usage date"],
+  allowance:["allowance","included allowance","included usage","limit","spend limit","quota",
+             "monthly quota","budget","included","included credits","monthly limit"],
+  product:["product","surface","feature","client","product surface","tool","sku"],
+  model:["model","model name"],
+  seat:["seat type","seat","seat tier","plan","tier","license","license type"]
+};
+var FIELDS=[["member","Member","required"],["amount","Amount","required"],["date","Date","optional"],
+            ["allowance","Allowance","optional"],["product","Product","optional"],
+            ["model","Model","optional"],["seat","Seat type","optional"]];
+function preselect(head){
+  var loose=head.map(hloose),used={},pre={};
+  FIELDS.forEach(function(f){
+    var k=f[0];pre[k]=-1;
+    var list=PRESELECT[k];
+    for(var a=0;a<list.length&&pre[k]<0;a++){
+      for(var i=0;i<loose.length;i++){
+        if(!used[i]&&loose[i]===list[a]){pre[k]=i;used[i]=1;break}
+      }
+    }
+  });
+  return pre;
+}
+
+/* ---- state -------------------------------------------------------------- */
+var files=[];          /* {name,size,rows,demo} */
+var head=[],data=[],dupCount=0,preset=null,mapping=null,model=null,isDemo=false;
+var confirmed={};      /* header row -> mapping the reader confirmed */
+var touched={unit:false,vendor:false};
+var overrideWrong=false;
+var curInp=null;
+
+/* ---- intake ------------------------------------------------------------- */
+function acceptFiles(list){
+  var arr=Array.prototype.slice.call(list||[]);
+  if(!arr.length)return;
+  for(var i=0;i<arr.length;i++){
+    if(arr[i].size>LIMIT){
+      problem('The file "'+arr[i].name+'" is '+size(arr[i].size)+', over the 20 MB limit this tool reads. '+
+        'Nothing was drawn.');
+      return;
+    }
+  }
+  if(isDemo){files=[];isDemo=false}
+  var k=0;
+  (function next(){
+    if(k>=arr.length){recompute(true);return}
+    var f=arr[k++];
+    var fr=new FileReader();
+    fr.onload=function(){files.push({name:f.name,size:f.size,rows:parseCSV(String(fr.result))});next()};
+    fr.onerror=function(){problem('The browser could not read "'+f.name+'". Nothing was drawn.')};
+    fr.readAsText(f);
+  })();
+}
+
+function recompute(focus){
+  $("#problem").hidden=true;
+  $("#mapper").hidden=true;
+  overrideWrong=overrideWrong&&files.length>0;
+  if(!files.length){$("#files").hidden=true;hideReport();return}
+  var first=files[0],h0=(first.rows[0]||[]).map(hnorm);
+  for(var i=1;i<files.length;i++){
+    var hi=(files[i].rows[0]||[]).map(hnorm),n=Math.max(h0.length,hi.length);
+    for(var c=0;c<n;c++){
+      if(h0[c]!==hi[c]){
+        dupCount=0;renderFiles(false);
+        problem('The files cannot be combined because their header rows differ: column '+(c+1)+
+          ' of "'+files[i].name+'" is '+(hi[c]===undefined?'missing':'"'+hi[c]+'"')+', where "'+
+          first.name+'" has '+(h0[c]===undefined?'no column '+(c+1):'"'+h0[c]+'"')+
+          '. Remove one of the files. Nothing was drawn.');
+        return;
+      }
+    }
+  }
+  head=h0;data=[];dupCount=0;
+  var seen={};
+  files.forEach(function(f,fi){
+    var own={};
+    for(var r=1;r<f.rows.length;r++){
+      var row=f.rows[r];
+      if(row.length===1&&row[0]==="")continue;
+      var key=row.join("");
+      if(fi>0&&seen[key])dupCount++;
+      own[key]=1;data.push(row);
+    }
+    Object.keys(own).forEach(function(k){seen[k]=1});
+  });
+  renderFiles(true);
+  if(!head.length||!data.length){problem("The file has no data rows. Nothing was drawn.");return}
+  var idx=idxOf(head),keys=head.map(hkey);
+  if(!overrideWrong){
+    for(var w=0;w<WRONG.length;w++){
+      if(WRONG[w].test(idx,keys)){problem(WRONG[w].message,true);return}
+    }
+  }
+  preset=null;
+  if(isDemo){
+    mapping=base();
+    mapping.member=0;mapping.seat=1;mapping.date=2;mapping.product=3;mapping.model=4;
+    mapping.amount=5;mapping.allowance=6;
+    if(!touched.unit)$("#unit").value="credits";
+  } else {
+    for(var p=0;p<PRESETS.length;p++){if(PRESETS[p].detect(idx)){preset=PRESETS[p];break}}
+    if(preset){
+      mapping=preset.build(idx);mapping.presetName=preset.name;
+      if(!touched.unit)$("#unit").value=preset.unit;
+      if(!touched.vendor)$("#vendor").value=preset.vendor;
+    } else if(confirmed[head.join("")]){
+      mapping=confirmed[head.join("")];
+    } else {
+      hideReport();openMapper();return;
+    }
+  }
+  draw(focus);
+}
+
+function renderFiles(combined){
+  var h="";
+  files.forEach(function(f,i){
+    var n=Math.max(0,f.rows.length-1);
+    h+='<li><span class="nm">'+esc(f.name)+'</span><span class="meta">'+fmtInt(n)+' data '+plural(n,"row")+
+      (f.demo?'':', '+size(f.size))+'</span>'+
+      (f.demo?'':'<button type="button" class="rm" data-i="'+i+'">Remove</button>')+'</li>';
+  });
+  $("#filelist").innerHTML=h;
+  var d="";
+  if(files.length>1&&combined){
+    d=dupCount?fmtInt(dupCount)+' '+plural(dupCount,"row")+' '+(dupCount===1?'appears':'appear')+
+      ' in more than one file and '+(dupCount===1?'is':'are')+' counted each time. Remove a file to avoid double counting.':
+      'No row appears in more than one file.';
+  }
+  $("#dups").textContent=d;
+  $("#files").hidden=false;
+  Array.prototype.forEach.call(document.querySelectorAll("#filelist button.rm"),function(b){
+    b.addEventListener("click",function(){files.splice(parseInt(b.getAttribute("data-i"),10),1);recompute(true)});
+  });
+}
+
+function hideReport(){
+  $("#report").hidden=true;$("#controls").hidden=true;model=null;
+}
+
+function problem(msg,allowOverride){
+  $("#problem").innerHTML='<div class="callout err"><p><strong>Nothing was drawn.</strong></p><p>'+esc(msg)+'</p>'+
+    (allowOverride?'<p><button type="button" id="anyway">This is a different file, open the column mapper</button></p>':'')+'</div>';
+  $("#problem").hidden=false;
+  $("#mapper").hidden=true;
+  hideReport();
+  if(allowOverride)$("#anyway").addEventListener("click",function(){overrideWrong=true;recompute(true)});
+}
+
+/* ---- mapper ------------------------------------------------------------- */
+function openMapper(){
+  var pre=preselect(head),h="";
+  FIELDS.forEach(function(f){
+    var k=f[0];
+    h+='<div><label for="map-'+k+'">'+f[1]+' <span class="tag">'+f[2]+'</span>'+
+      (pre[k]>=0?' <span class="tag">pre-selected</span>':'')+'</label><select id="map-'+k+'"><option value="-1">(none)</option>';
+    head.forEach(function(name,i){
+      h+='<option value="'+i+'"'+(pre[k]===i?' selected':'')+'>'+esc(name||"(column "+(i+1)+")")+'</option>';
+    });
+    h+='</select></div>';
+  });
+  $("#mapgrid").innerHTML=h;
+  FIELDS.forEach(function(f){$("#map-"+f[0]).addEventListener("change",previewMap)});
+  previewMap();
+  $("#map-problem").innerHTML="";
+  $("#mapper").hidden=false;
+  $("#mapper-top").focus();
+}
+function readMap(){var m=base();FIELDS.forEach(function(f){m[f[0]]=parseInt($("#map-"+f[0]).value,10)});return m}
+function previewMap(){
+  var m=readMap(),chosen=FIELDS.filter(function(f){return m[f[0]]>=0});
+  if(!chosen.length){$("#preview").innerHTML='<p class="note">Choose a column to see its first rows here.</p>';return}
+  var h='<table class="data preview"><thead><tr>';
+  chosen.forEach(function(f){h+='<th>'+esc(f[1])+'<br><code>'+esc(head[m[f[0]]])+'</code></th>'});
+  h+='</tr></thead><tbody>';
+  data.slice(0,5).forEach(function(row){
+    h+='<tr>';chosen.forEach(function(f){h+='<td>'+esc(row[m[f[0]]]||"")+'</td>'});h+='</tr>';
+  });
+  h+='</tbody></table>';
+  $("#preview").innerHTML=h;
+}
+function mapProblem(msg){
+  $("#map-problem").innerHTML='<div class="callout err"><p>'+esc(msg)+'</p></div>';
+}
+function confirmMap(){
+  var m=readMap(),missing=[];
+  if(m.member<0)missing.push("the member column");
+  if(m.amount<0)missing.push("the amount column");
+  if(missing.length){mapProblem("Choose "+missing.join(" and ")+" before the report can be drawn. Nothing was drawn.");return}
+  var used={};
+  for(var i=0;i<FIELDS.length;i++){
+    var k=FIELDS[i][0];if(m[k]<0)continue;
+    if(used[m[k]]!==undefined){
+      mapProblem('The column "'+head[m[k]]+'" is chosen for both '+used[m[k]]+' and '+FIELDS[i][1].toLowerCase()+
+        '. Choose a different column for one of them. Nothing was drawn.');return;
+    }
+    used[m[k]]=FIELDS[i][1].toLowerCase();
+  }
+  try{validate(head,data,m)}catch(e){mapProblem(e.message);return}
+  mapping=m;confirmed[head.join("")]=m;
+  $("#mapper").hidden=true;
+  draw(true);
+}
+
+/* ---- validation --------------------------------------------------------- */
+function validate(head,data,m){
+  var cols=m.amountCols||[{name:head[m.amount],col:m.amount}];
+  var get=function(row,i){return (i>=0&&i<row.length)?String(row[i]).trim():""};
+  cols.forEach(function(c){
+    var fails=0,example=null;
+    for(var r=0;r<data.length;r++){
+      var row=data[r];
+      if(row.length===1&&row[0]==="")continue;
+      if(m.skip){var g=function(i){return get(row,i)};if(m.skip(g))continue}
+      var p=parseNum(get(row,c.col));
+      if(p.fail){fails++;if(!example)example={v:get(row,c.col),r:r+1}}
+    }
+    if(fails)throw new Error('The amount column "'+c.name+'" has '+fmtInt(fails)+' '+plural(fails,"cell")+
+      ' that could not be read as a number, for example "'+example.v+'" in data row '+fmtInt(example.r)+
+      '. Nothing was drawn.');
+  });
+  var any=false;
+  for(var r2=0;r2<data.length&&!any;r2++){if(get(data[r2],m.member)!=="")any=true}
+  if(!any)throw new Error('The member column "'+head[m.member]+'" is empty in every row. Nothing was drawn.');
+}
+
+/* ---- computation ---------------------------------------------------------- */
+function inputs(){
+  var allow=parseFloat($("#allow").value),share=parseFloat($("#share").value),
+      seats=parseInt($("#seats").value,10),rate=parseFloat($("#rate").value),
+      unit=$("#unit").value.trim();
+  return {
+    allow:(isFinite(allow)&&allow>0)?allow:0,
+    share:(isFinite(share)&&share>=0&&share<=100)?share:20,
+    seats:(isFinite(seats)&&seats>0)?seats:0,
+    rate:(isFinite(rate)&&rate>0)?rate:0,
+    unit:unit||"units",unitBlank:!unit,
+    isUSD:/^(usd|us\s*dollars?|dollars?|\$)$/i.test(unit),
+    vendor:$("#vendor").value
+  };
+}
+function dateRange(dates){
+  if(!dates.length)return null;
+  var parsed=dates.map(function(d){return Date.parse(d)});
+  if(parsed.every(function(t){return isFinite(t)})){
+    var lo=Infinity,hi=-Infinity,loS="",hiS="";
+    dates.forEach(function(d,i){if(parsed[i]<lo){lo=parsed[i];loS=d}if(parsed[i]>hi){hi=parsed[i];hiS=d}});
+    return {from:loS,to:hiS};
+  }
+  var s=dates.slice().sort();
+  return {from:s[0],to:s[s.length-1]};
+}
+function analyze(head,data,m,inp){
+  var get=function(row,i){return (i>=0&&i<row.length)?String(row[i]).trim():""};
+  var members={},list=[],products={},models={},seats={},dates=[];
+  var acc={requests:0,setAside:{},noMember:0,blank:0,rowsUsed:0};
+  data.forEach(function(row){
+    if(row.length===1&&row[0]==="")return;
+    var g=function(i){return get(row,i)};
+    if(m.skip){
+      var why=m.skip(g);
+      if(why){
+        var sa=acc.setAside[why]||(acc.setAside[why]={rows:0,amount:0});
+        sa.rows++;
+        if(m.skipCarriesAmount){var pa=parseNum(g(m.amount));if(!pa.fail)sa.amount+=pa.n}
+        return;
+      }
+    }
+    var name=g(m.member);
+    if(!name){acc.noMember++;return}
+    var amt;
+    if(m.rowAmount)amt=m.rowAmount(g,acc);
+    else{var p=parseNum(g(m.amount));if(p.empty){acc.blank++;amt=0}else amt=p.n}
+    var mm=members[name];
+    if(!mm){mm=members[name]={name:name,amount:0,dollars:0,allowance:0,seat:"",rows:0};list.push(mm)}
+    mm.amount+=amt;mm.rows++;
+    if(m.dollars){var d=parseNum(g(m.dollars.col));if(!d.fail&&!d.empty)mm.dollars+=d.n}
+    if(m.allowance>=0){var a=parseNum(g(m.allowance));if(!a.fail&&!a.empty&&a.n>mm.allowance)mm.allowance=a.n}
+    if(m.seat>=0&&!mm.seat)mm.seat=g(m.seat);
+    if(m.product>=0){var pr=g(m.product)||"(unspecified)";products[pr]=(products[pr]||0)+amt}
+    if(m.model>=0){var mo=g(m.model)||"(unspecified)";models[mo]=(models[mo]||0)+amt}
+    if(m.seat>=0){var st=g(m.seat)||"(unspecified)";var so=seats[st]||(seats[st]={amount:0,members:{}});so.amount+=amt;so.members[name]=1}
+    if(m.date>=0){var dt=g(m.date);if(dt)dates.push(dt)}
+    acc.rowsUsed++;
+  });
+  if(!list.length)throw new Error("No rows attributed to a member were found. Nothing was drawn.");
+  list.sort(function(a,b){return b.amount-a.amount||a.name.localeCompare(b.name)});
+  var count=list.length,total=list.reduce(function(s,u){return s+u.amount},0);
+  var topN=Math.max(1,Math.ceil(count*0.2));
+  var topSum=list.slice(0,topN).reduce(function(s,u){return s+u.amount},0);
+  var sorted=list.map(function(u){return u.amount}).sort(function(a,b){return a-b});
+  var median=count%2?sorted[(count-1)/2]:(sorted[count/2-1]+sorted[count/2])/2;
+  var integer=list.every(function(u){return Math.abs(u.amount-Math.round(u.amount))<1e-9});
+
+  var al={source:null,typed:inp.allow,shareFrac:inp.share/100,over:[],low:[],overBy:0,unusedLow:0,
+          unknown:0,colName:m.allowance>=0?head[m.allowance]:"",colHas:false};
+  al.colHas=m.allowance>=0&&list.some(function(u){return u.allowance>0});
+  if(inp.allow>0)al.source="typed";else if(al.colHas)al.source="column";
+  list.forEach(function(u){
+    u.limit=0;u.status="";
+    if(!al.source)return;
+    var a=al.source==="typed"?inp.allow:u.allowance;
+    if(!(a>0)){al.unknown++;return}
+    u.limit=a;
+    if(u.amount>=a){al.over.push(u);al.overBy+=u.amount-a;u.status="over"}
+    else if(u.amount<a*al.shareFrac){al.low.push(u);al.unusedLow+=a-u.amount;u.status="low"}
+  });
+
+  var dol={mode:null,rate:0,source:""};
+  if(inp.isUSD)dol.mode="usd";
+  else if(inp.rate>0){dol.mode="rate";dol.rate=inp.rate;dol.source="at "+usd(inp.rate)+" per unit of "+inp.unit+", the rate you typed"}
+  else if(m.dollars){dol.mode="column";dol.source="from the file's "+m.dollars.name+" column"}
+  var dollarsTotal=null;
+  if(dol.mode==="column")dollarsTotal=list.reduce(function(s,u){return s+u.dollars},0);
+  else if(dol.mode==="rate")dollarsTotal=total*inp.rate;
+
+  var toList=function(o){return Object.keys(o).map(function(k){return {name:k,v:o[k]}})
+    .sort(function(a,b){return b.v-a.v||a.name.localeCompare(b.name)})};
+  return {
+    members:list,count:count,total:total,topN:topN,topSum:topSum,topShare:total>0?topSum/total:0,
+    median:median,heaviest:list[0].amount,zero:list.filter(function(u){return u.amount===0}).length,
+    integer:integer,
+    products:m.product>=0?toList(products):null,
+    models:m.model>=0?toList(models):null,
+    seats:m.seat>=0?Object.keys(seats).map(function(k){return {name:k,v:seats[k].amount,members:Object.keys(seats[k].members).length}})
+      .sort(function(a,b){return b.v-a.v||a.name.localeCompare(b.name)}):null,
+    dates:dateRange(dates),acc:acc,al:al,dol:dol,dollarsTotal:dollarsTotal,
+    inferred:inp.seats>count?inp.seats-count:0,
+    extras:m.extras?m.extras(acc):[]
+  };
+}
+
+/* ---- formatting bound to the current report ----------------------------- */
+function A(n){
+  if(curInp.isUSD)return usd(n);
+  return model.integer?fmtInt(n):n.toLocaleString("en-US",{maximumFractionDigits:2});
+}
+function AU(n){return curInp.isUSD?usd(n):A(n)+" "+curInp.unit}
+function DOL(u){
+  var d=model.dol.mode==="rate"?u.amount*model.dol.rate:(model.dol.mode==="column"?u.dollars:null);
+  return d==null?"":usd(d);
+}
+function statusText(u){
+  return u.status==="over"?"at or over the allowance":(u.status==="low"?"below "+curInp.share+" % of the allowance":"");
+}
+
+/* ---- render --------------------------------------------------------------- */
+function meter(label,value,frac){
+  return '<div class="meter"><div class="lab"><span>'+esc(label)+'</span><b>'+esc(value)+
+    '</b></div><div class="track"><div class="fill" style="width:'+
+    (Math.max(0,Math.min(1,frac))*100).toFixed(1)+'%"></div></div></div>';
+}
+function bars(items,max,fmtv){
+  var h='<table class="bars">';
+  items.forEach(function(it){
+    var st=it.status||"";
+    h+='<tr'+(st?' class="'+st+'"':'')+'><td class="name">'+esc(it.name)+
+      (st?' <span class="tag '+(st==="over"?"warn":"low")+'">'+(st==="over"?"at or over":"low")+'</span>':'')+
+      '</td><td class="plot"><div class="bar" style="width:'+
+      (max>0?Math.max(0.5,Math.max(0,it.v)/max*100):0).toFixed(1)+'%"></div></td>'+
+      '<td class="val">'+esc(fmtv(it))+'</td></tr>';
+  });
+  return h+'</table>';
+}
+function tile(k,v,unit){
+  return '<div class="tile"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+
+    (unit?' <small>'+esc(unit)+'</small>':'')+'</div></div>';
+}
+function mappingText(){
+  return FIELDS.map(function(f){return f[1].toLowerCase()+' = '+(mapping[f[0]]>=0?'"'+esc(head[mapping[f[0]]])+'"':'none')}).join(", ")+'.';
+}
+function finding(inp){
+  var a=model,v=VENDORS[inp.vendor],href=v?SITE+v.path:SITE;
+  var what=isDemo?"synthetic data":"file",s="";
+  if(a.al.source){
+    s+="In this "+what+", "+fmtInt(a.al.over.length)+" of "+fmtInt(a.count)+" "+plural(a.count,"member")+" "+
+      (a.al.over.length===1?"is":"are")+" at or over the allowance"+
+      (a.al.overBy>0?", by "+AU(a.al.overBy)+" in total,":",")+" and "+fmtInt(a.al.low.length)+" "+
+      (a.al.low.length===1?"is":"are")+" below "+inp.share+" % of it, leaving "+AU(a.al.unusedLow)+
+      " unused, in the same period.";
+  } else {
+    s+="No allowance is known for this "+what+", so it cannot yet show who is at the wall beside "+
+      "whose allowance went unused. Type a per-member allowance above to see both.";
+  }
+  if(a.inferred)s+=" A further "+fmtInt(a.inferred)+" "+plural(a.inferred,"seat")+" recorded no usage at all, "+
+    "inferred from the seat count you typed.";
+  if(v)s+=' What each '+esc(v.name)+' control does about that, and where it stops, is explained in <a href="'+href+
+    '" rel="noopener">'+esc(v.title)+'</a>.';
+  else s+=' What each vendor\'s controls do about that, and where they stop, is explained at <a href="'+href+
+    '" rel="noopener">spillwayops.com</a>.';
+  return s;
+}
+
+function draw(focus){
+  try{
+    validate(head,data,mapping);
+    render(focus);
+  }catch(e){problem(e.message)}
+}
+
+function render(focus){
+  var inp=inputs();curInp=inp;
+  model=analyze(head,data,mapping,inp);
+  var a=model,h="";
+  $("#rate").disabled=inp.isUSD;
+  $("#rate").placeholder=inp.isUSD?"not needed, the amount is in dollars":"blank unless a source states it";
+
+  if(isDemo)h+='<div class="callout"><p><strong>Synthetic data.</strong> These figures are invented '+
+    'to show the report\'s shape. No file was read.</p></div>';
+  h+='<h2 id="report-top" tabindex="-1">Report</h2>';
+  if(mapping.presetName)h+='<p><strong>Recognized as the '+esc(mapping.presetName)+'</strong> by its header row, '+
+    'so no mapping was asked for. '+esc(mapping.described)+'</p>';
+  else if(isDemo)h+='<p>Synthetic per-member rows with member, seat type, date, product, model, amount and '+
+    'allowance columns, mapped without the mapper.</p>';
+  else h+='<p><strong>Mapped by hand:</strong> '+mappingText()+' <button type="button" class="link" id="remap">Change the mapping</button></p>';
+
+  /* summary */
+  h+='<h2>Summary</h2><div class="tiles">'+
+    tile("Members in the file",fmtInt(a.count))+
+    tile("Total",A(a.total),inp.isUSD?"":inp.unit)+
+    (a.dollarsTotal!=null?tile("Total in dollars",usd(a.dollarsTotal),a.dol.source):"")+
+    tile("Share drawn by the heaviest fifth",pct(a.topShare),fmtInt(a.topN)+" of "+fmtInt(a.count)+" members")+
+    tile("Median member",A(a.median),inp.isUSD?"":inp.unit)+
+    tile("Heaviest member",A(a.heaviest),inp.isUSD?"":inp.unit)+
+    (a.zero?tile("Members with a zero amount",fmtInt(a.zero),"present in the file"):"")+
+    (a.inferred?tile("Seats with no usage recorded",fmtInt(a.inferred),"inferred from the seat count you typed, not read from the file"):"")+
+    a.extras.map(function(x){return tile(x[0],x[1],x[2])}).join("")+
+  '</div>';
+  var notes=[fmtInt(a.acc.rowsUsed)+' member '+plural(a.acc.rowsUsed,"row")+' read'];
+  if(a.dates)notes.push('covering '+esc(a.dates.from)+(a.dates.to!==a.dates.from?' to '+esc(a.dates.to):''));
+  Object.keys(a.acc.setAside).forEach(function(why){
+    var sa=a.acc.setAside[why];
+    notes.push(fmtInt(sa.rows)+' '+plural(sa.rows,"row")+' set aside ('+esc(why)+')'+(mapping.skipCarriesAmount&&sa.amount?', carrying '+AU(sa.amount):''));
+  });
+  if(a.acc.noMember)notes.push(fmtInt(a.acc.noMember)+' '+plural(a.acc.noMember,"row")+' with no member skipped');
+  if(a.acc.blank)notes.push(fmtInt(a.acc.blank)+' blank amount '+plural(a.acc.blank,"cell")+' read as zero');
+  if(dupCount)notes.push(fmtInt(dupCount)+' duplicate '+plural(dupCount,"row")+' across files counted each time');
+  h+='<p class="note" style="margin-top:.7rem">'+notes.join('; ')+'.</p>';
+  if(inp.unitBlank&&!inp.isUSD)h+='<p class="note">The amount column has no unit label yet. Type one above, '+
+    'for example credits, so every figure names it.</p>';
+
+  /* concentration */
+  h+='<h2>Concentration</h2>';
+  h+=meter("Share of the total drawn by the heaviest fifth, "+fmtInt(a.topN)+" of "+fmtInt(a.count)+" members",pct(a.topShare),a.topShare);
+  h+='<p class="note">The heaviest '+fmtInt(a.topN)+' '+plural(a.topN,"member")+' drew '+AU(a.topSum)+' of '+AU(a.total)+
+    '. The table below lists every member in that order, so the figure can be checked by hand: the fifth is '+
+    fmtInt(a.count)+' members times 0.2, rounded up to a whole member.</p>';
+  if(inp.seats&&!a.inferred)h+='<p class="note">The seat count you typed ('+fmtInt(inp.seats)+') is not larger than the '+
+    fmtInt(a.count)+' members in the file, so no seats without usage are inferred.</p>';
+  else if(!inp.seats)h+='<p class="note">Type a seat count above to see how many seats have no usage recorded. '+
+    'The file lists only members with rows.</p>';
+
+  /* allowance */
+  h+='<h2>Against the allowance</h2>';
+  if(a.al.source){
+    var over=a.al.over.length,low=a.al.low.length;
+    h+='<div class="tiles">'+
+      tile("At or over the allowance",fmtInt(over),"of "+fmtInt(a.count)+" members")+
+      tile("Below "+inp.share+" % of the allowance",fmtInt(low),"of "+fmtInt(a.count)+" members")+
+      (over?tile("Drawn past the allowance",A(a.al.overBy),(inp.isUSD?"":inp.unit+", ")+"by those at or over"):"")+
+      (low?tile("Left unused",A(a.al.unusedLow),(inp.isUSD?"":inp.unit+", ")+"by those below "+inp.share+" %"):"")+
+    '</div>';
+    h+='<div class="callout'+(over?' warn':'')+'"><p>'+
+      (over?'<span class="flag">At or over</span> ':'')+fmtInt(over)+' '+plural(over,"member")+' '+(over===1?'is':'are')+
+      ' at or over the allowance'+(a.al.overBy>0?', by '+AU(a.al.overBy)+' in total':'')+', and '+fmtInt(low)+' '+
+      (low===1?'is':'are')+' below '+inp.share+' % of it, leaving '+AU(a.al.unusedLow)+' unused, in the same period.</p>'+
+      '<p class="note">'+(a.al.source==="typed"?
+        'The allowance is '+AU(inp.allow)+' per member, as you typed it'+(a.al.colHas?', overriding the allowance column "'+esc(a.al.colName)+'"':'')+'.':
+        'The allowance is read per member from the column "'+esc(a.al.colName)+'".')+
+      (a.al.unknown?' '+fmtInt(a.al.unknown)+' '+plural(a.al.unknown,"member")+' '+(a.al.unknown===1?'has':'have')+
+        ' no allowance recorded and '+(a.al.unknown===1?'is':'are')+' counted in neither figure.':'')+
+      ' A member at or over the allowance is at the wall; a member below '+inp.share+' % of it left at least '+
+      (100-inp.share)+' % unused. Change the share above to move that line.</p></div>';
+  } else {
+    h+='<div class="callout"><p><strong>No allowance is known for this '+(isDemo?'synthetic data':'file')+
+      '.</strong> The members at or over it and the members below an unused share are not shown. Type a '+
+      'per-member allowance above'+((!mapping.presetName&&!isDemo)?', or change the mapping to choose an allowance column,':'')+
+      ' and both figures appear.</p></div>';
+  }
+
+  /* distribution */
+  h+='<h2>Members by amount</h2>';
+  var top=a.members.slice(0,25);
+  h+=bars(top.map(function(u){return {name:u.name,v:u.amount,status:u.status,u:u}}),Math.max(0,a.members[0].amount),
+    function(it){return A(it.v)+(it.u.limit?" / "+A(it.u.limit):"")});
+  h+='<p class="note">'+(a.count>25?'Showing the 25 heaviest of '+fmtInt(a.count)+' members. ':'')+
+    (a.al.source?'"at or over" marks a member at or over the allowance and "low" marks a member below '+inp.share+
+      ' % of it; the value shows the amount and the allowance. ':'')+'All members are listed in the table below.</p>';
+
+  /* breakdowns */
+  if(a.products){h+='<h2>By product</h2>';h+=bars(a.products.slice(0,12),Math.max(0,a.products[0].v),function(it){return A(it.v)+(model.dol.mode==="rate"?" ("+usd(it.v*model.dol.rate)+")":"")})}
+  if(a.models){h+='<h2>By model</h2>';h+=bars(a.models.slice(0,12),Math.max(0,a.models[0].v),function(it){return A(it.v)+(model.dol.mode==="rate"?" ("+usd(it.v*model.dol.rate)+")":"")})}
+  if(a.seats){h+='<h2>By seat type</h2>';h+=bars(a.seats,Math.max(0,a.seats[0].v),function(it){return A(it.v)+", "+fmtInt(it.members)+" "+plural(it.members,"member")})}
+  if(model.dol.mode==="rate"&&(a.products||a.models))h+='<p class="note">Figures in parentheses are '+esc(a.dol.source)+'.</p>';
+
+  /* table */
+  var showDol=a.dol.mode==="rate"||a.dol.mode==="column";
+  h+='<details><summary>All members as a table</summary><div class="scroll"><table class="data"><thead><tr>'+
+    '<th class="n">Rank</th><th>Member</th><th class="n">Amount'+(inp.isUSD?'':' ('+esc(inp.unit)+')')+'</th>'+
+    (showDol?'<th class="n">Dollars, '+esc(a.dol.source)+'</th>':'')+
+    '<th class="n">Share</th>'+(a.al.source?'<th class="n">Allowance</th><th>Status</th>':'')+
+    (a.seats?'<th>Seat type</th>':'')+'</tr></thead><tbody>';
+  a.members.forEach(function(u,i){
+    h+='<tr><td class="n">'+(i+1)+'</td><td>'+esc(u.name)+'</td><td class="n">'+A(u.amount)+'</td>'+
+      (showDol?'<td class="n">'+DOL(u)+'</td>':'')+
+      '<td class="n">'+(a.total>0?pct(u.amount/a.total):'')+'</td>'+
+      (a.al.source?'<td class="n">'+(u.limit?A(u.limit):'none recorded')+'</td><td>'+esc(statusText(u))+'</td>':'')+
+      (a.seats?'<td>'+esc(u.seat)+'</td>':'')+'</tr>';
+  });
+  h+='</tbody></table></div></details>';
+  if(mapping.missing&&mapping.missing.length)h+='<p class="note" style="margin-top:1.5rem">Columns of this export not present '+
+    'in the file, whose figures were omitted rather than estimated: '+esc(mapping.missing.join(", "))+'.</p>';
+
+  /* finding and the one reference */
+  h+='<h2>What this shows</h2><p>'+finding(inp)+'</p>';
+
+  /* redacted summary */
+  h+='<h2>Redacted summary</h2><p>Every member identifier is replaced by an ordinal label, so this text can be '+
+    'shared or filed as an issue without names. It carries the header row, the mapping, the counts, the totals, '+
+    'the allowance figures and the distribution in buckets.</p>'+
+    '<p><button type="button" id="copy">Copy the redacted summary</button> <span id="copied" class="note" aria-live="polite"></span></p>'+
+    '<textarea id="summary" class="sum" readonly aria-label="Redacted summary"></textarea>';
+
+  h+='<p style="margin-top:2rem"><button type="button" id="again">Start over</button></p>';
+  $("#report").innerHTML=h;
+  $("#summary").value=summaryText(inp);
+  $("#report").hidden=false;
+  $("#controls").hidden=false;
+  $("#problem").hidden=true;
+  $("#again").addEventListener("click",startOver);
+  $("#copy").addEventListener("click",copySummary);
+  if($("#remap"))$("#remap").addEventListener("click",function(){
+    delete confirmed[head.join("")];hideReport();openMapper();
+  });
+  if(focus)$("#report-top").focus();
+}
+
+/* ---- redacted summary ----------------------------------------------------- */
+function buckets(list){
+  var max=list[0].amount;
+  if(!(max>0))return [[A(0),list.length]];
+  var w=max/10,out=[];
+  for(var i=0;i<10;i++)out.push({lo:i*w,hi:(i+1)*w,n:0});
+  list.forEach(function(u){var i=u.amount<=0?0:Math.min(9,Math.floor(u.amount/w));out[i].n++});
+  return out.map(function(b,i){return [i===9?A(b.lo)+" to "+A(b.hi):A(b.lo)+" to under "+A(b.hi),b.n]});
+}
+function summaryText(inp){
+  var a=model,L=[];
+  L.push("Usage report, redacted summary");
+  L.push("Tool: usage-report in spillwayops-tools; synthetic data: "+(isDemo?"yes":"no"));
+  L.push("Files: "+files.length+"; data rows: "+fmtInt(data.length)+"; duplicate rows across files: "+fmtInt(dupCount));
+  L.push("Header row: "+head.join(","));
+  L.push("Recognized as: "+(mapping.presetName||"none, mapped by hand"));
+  L.push("Mapping: "+FIELDS.map(function(f){return f[1].toLowerCase()+" = "+(mapping[f[0]]>=0?'"'+head[mapping[f[0]]]+'"':"none")}).join("; "));
+  L.push("Unit: "+inp.unit+"; dollars: "+(a.dol.mode==="usd"?"the amount is in dollars":(a.dol.mode?a.dol.source:"none")));
+  var rowNotes=["rows used: "+fmtInt(a.acc.rowsUsed),"rows without a member: "+fmtInt(a.acc.noMember),
+    "blank amount cells read as zero: "+fmtInt(a.acc.blank)];
+  Object.keys(a.acc.setAside).forEach(function(why){var n=a.acc.setAside[why].rows;rowNotes.push(fmtInt(n)+" "+plural(n,"row")+" set aside ("+why+")")});
+  L.push("Rows: "+rowNotes.join("; "));
+  L.push("Members: "+fmtInt(a.count)+"; total: "+AU(a.total)+(a.dollarsTotal!=null?" ("+usd(a.dollarsTotal)+")":"")+
+    "; median: "+AU(a.median)+"; heaviest: "+AU(a.heaviest)+"; members with a zero amount: "+fmtInt(a.zero));
+  L.push("Heaviest fifth: "+fmtInt(a.topN)+" of "+fmtInt(a.count)+" members drew "+pct(a.topShare)+" of the total");
+  if(a.al.source){
+    L.push("Allowance: "+(a.al.source==="typed"?AU(inp.allow)+" per member, typed":'per member from the column "'+a.al.colName+'"')+
+      "; at or over: "+fmtInt(a.al.over.length)+"; below "+inp.share+" %: "+fmtInt(a.al.low.length)+
+      "; drawn past the allowance: "+AU(a.al.overBy)+"; left unused by those below: "+AU(a.al.unusedLow)+
+      "; members with no allowance recorded: "+fmtInt(a.al.unknown));
+  } else L.push("Allowance: none known");
+  L.push("Seats typed: "+(inp.seats?fmtInt(inp.seats)+"; seats with no usage recorded, inferred: "+fmtInt(a.inferred):"none"));
+  if(a.products)L.push("Distinct products: "+fmtInt(a.products.length));
+  if(a.models)L.push("Distinct models: "+fmtInt(a.models.length));
+  if(a.seats)L.push("Distinct seat types: "+fmtInt(a.seats.length));
+  if(a.dates)L.push("Dates covered: "+a.dates.from+" to "+a.dates.to);
+  L.push("Heaviest members, by ordinal label:");
+  a.members.slice(0,10).forEach(function(u,i){
+    L.push("  "+ord(i+1)+": "+AU(u.amount)+(u.limit?" of "+A(u.limit):"")+(u.status?", "+statusText(u):""));
+  });
+  L.push("Distribution in "+(inp.isUSD?"dollars":inp.unit)+", ten equal buckets from zero to the heaviest member:");
+  buckets(a.members).forEach(function(b){L.push("  "+b[0]+": "+fmtInt(b[1])+" "+plural(b[1],"member"))});
+  L.push("Vendor chosen: "+(VENDORS[inp.vendor]?VENDORS[inp.vendor].name:"none"));
+  return L.join("\n");
+}
+function copySummary(){
+  var ta=$("#summary"),txt=ta.value;
+  var done=function(ok){$("#copied").textContent=ok?"Copied to the clipboard.":"The browser blocked copying. Select the text below and copy it."};
+  var fallback=function(){try{ta.focus();ta.select();done(!!document.execCommand("copy"))}catch(e){done(false)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){done(true)},fallback);
+  } else fallback();
+}
+
+/* ---- synthetic data --------------------------------------------------------- */
+function demoRows(){
+  var rows=[["member","seat_type","date","product","model","amount","allowance"]];
+  var seed=23,rnd=function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  var products=["Agent","Chat","Tab completions"],models=["large-reasoning","medium","small-fast"];
+  for(var u=1;u<=60;u++){
+    var name="dev-"+String(u).padStart(3,"0"),premium=u<=8,allowance=premium?5000:1000,scale;
+    /* heavy tail: a few members past the allowance, a long thin body, some zeros */
+    if(u<=3)scale=5300+rnd()*2500;
+    else if(u<=8)scale=1500+rnd()*2800;
+    else if(u<=12)scale=1050+rnd()*600;
+    else if(u<=30)scale=250+rnd()*650;
+    else if(u<=54)scale=5+rnd()*170;
+    else scale=0;
+    var days=scale>0?2+Math.floor(rnd()*5):1;
+    for(var d=0;d<days;d++){
+      var c=scale>0?Math.round(scale/days*(0.7+rnd()*0.6)):0;
+      var day="2026-09-"+String(1+Math.floor(rnd()*14)).padStart(2,"0");
+      var prod=rnd()<0.6?products[0]:products[1+Math.floor(rnd()*2)];
+      rows.push([name,premium?"Premium":"Standard",day,prod,models[Math.floor(rnd()*3)],String(c),String(allowance)]);
+    }
+  }
+  return rows;
+}
+function runDemo(){
+  files=[{name:"synthetic data, no file read",size:0,rows:demoRows(),demo:true}];
+  isDemo=true;overrideWrong=false;
+  recompute(true);
+}
+
+/* ---- wiring --------------------------------------------------------------------- */
+function startOver(){
+  files=[];isDemo=false;overrideWrong=false;model=null;mapping=null;preset=null;confirmed={};
+  touched={unit:false,vendor:false};
+  ["allow","seats","rate","unit"].forEach(function(id){$("#"+id).value=""});
+  $("#share").value="20";$("#vendor").value="";$("#rate").disabled=false;
+  $("#files").hidden=true;$("#mapper").hidden=true;$("#controls").hidden=true;
+  $("#report").hidden=true;$("#problem").hidden=true;
+  $("#file").value="";
+  window.scrollTo(0,0);$("#pick").focus();
+}
+var drop=$("#drop"),file=$("#file");
+$("#pick").addEventListener("click",function(){file.click()});
+$("#demo").addEventListener("click",runDemo);
+$("#map-confirm").addEventListener("click",confirmMap);
+file.addEventListener("change",function(){if(file.files&&file.files.length)acceptFiles(file.files);file.value=""});
+["allow","share","seats","rate"].forEach(function(id){$("#"+id).addEventListener("input",function(){if(model)render(false)})});
+$("#unit").addEventListener("input",function(){touched.unit=true;if(model)render(false)});
+$("#vendor").addEventListener("change",function(){touched.vendor=true;if(model)render(false)});
+["dragenter","dragover"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(e){
+  drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",function(ev){
+  var fl=ev.dataTransfer&&ev.dataTransfer.files;
+  if(fl&&fl.length)acceptFiles(fl);
+});
+})();
+</script>
+</body>
+</html>
