@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>usage-report tests</title>
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --border:#e4e4e1;
+  --ink:#1c1c1a; --ink-2:#55554f; --ink-3:#84847c;
+  --pass:#2f6f6a; --fail:#a4321f;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#161614; --surface:#1e1e1c; --border:#33332f;
+  --ink:#f0efe9; --ink-2:#b4b4ac; --ink-3:#84847c;
+  --pass:#6fbfb6; --fail:#ef8a73;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--sans)}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+h1{font-size:1.5rem;margin:0 0 .35rem;letter-spacing:-.01em}
+.sub{color:var(--ink-2);margin:0 0 1.5rem;max-width:44rem}
+#status{font-weight:600;margin:0}
+#status.pass{color:var(--pass)}
+#status.fail{color:var(--fail)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:1rem}
+th,td{text-align:left;padding:.45rem .6rem;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--ink-3);font-weight:500;font-size:.78rem}
+td.r{font-weight:600;white-space:nowrap}
+td.r.pass{color:var(--pass)}
+td.r.fail{color:var(--fail)}
+td code{font-family:var(--mono);font-size:.8rem}
+.why{font-family:var(--mono);font-size:.78rem;color:var(--fail);white-space:pre-wrap;margin:.35rem 0 0}
+a{color:var(--pass);text-decoration:underline;text-underline-offset:.18em}
+#frames{position:fixed;left:-12000px;top:0;width:1000px;height:800px;overflow:hidden}
+#frames iframe{width:1000px;height:800px;border:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>usage-report tests</h1>
+<p class="sub">Each case loads the usage report, <a href="../index.html">../index.html</a>, in a
+frame, drops fixture files from this directory on it through its file input, takes the
+steps a reader would, and checks what the page then shows against figures worked out by
+hand from the fixture. <a href="README.md">README.md</a> says where each fixture's format
+comes from. Every fixture is synthetic. The page must be served over HTTP, for example
+with <code>python3 -m http.server</code> from the repository root.</p>
+<p id="status" role="status">Running…</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>Case</th><th>Files</th><th>Result</th></tr></thead>
+  <tbody id="results"></tbody>
+</table>
+</div>
+</div>
+<div id="frames" aria-hidden="true"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* Each case drops its files, then takes its steps: click a selector, choose
+   an option by its label, or type into an input. expect.preselect lists the
+   mapper's pre-selected column per field, and a field it leaves out must be
+   pre-selected as (none). expect.summary and expect.tiles are lines the
+   redacted summary and the stat tiles must contain. */
+var CASES=[
+  /* ---- GitHub Copilot ------------------------------------------------- */
+  {name:"Copilot AI usage report, recognized",files:["copilot/ai-usage-report.csv"],
+   expect:{unit:"AI credits",vendor:"copilot",summary:[
+     "Recognized as: GitHub AI usage report",
+     "Unit: AI credits; dollars: from the file's net_amount column",
+     "Members: 4; total: 5,200 AI credits ($21.00); median: 600 AI credits; heaviest: 4,000 AI credits; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 4 members drew 76.9 % of the total",
+     "Allowance: none known",
+     "Distinct models: 5",
+     "Dates covered: 2026-09-01 to 2026-09-04"]}},
+  {name:"Copilot AI usage report, typed allowance",files:["copilot/ai-usage-report.csv"],
+   steps:[{type:{"#allow":"1000"}}],
+   expect:{summary:[
+     "Allowance: 1,000 AI credits per member, typed; at or over: 1; below 20 %: 1; drawn past the allowance: 3,000 AI credits; left unused by those below: 1,000 AI credits; members with no allowance recorded: 0"]}},
+  {name:"Copilot billing usage CSV, preview format",files:["copilot/billing-usage-preview.csv"],
+   expect:{unit:"AI credits",vendor:"copilot",tiles:["Request-metered units: 40"],summary:[
+     "Recognized as: GitHub Copilot billing usage CSV",
+     "1 row set aside (product not Copilot)",
+     "Members: 3; total: 3,650 AI credits ($25.00); median: 150 AI credits; heaviest: 3,500 AI credits; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 3 members drew 95.9 % of the total",
+     "Allowance: per member from the column \"total_monthly_quota\"; at or over: 1; below 20 %: 1; drawn past the allowance: 1,600 AI credits; left unused by those below: 1,750 AI credits; members with no allowance recorded: 1",
+     "Distinct models: 3",
+     "Dates covered: 2026-05-04 to 2026-05-06"]}},
+  {name:"Copilot billing usage CSV, premium requests only",files:["copilot/billing-usage-premium-requests.csv"],
+   expect:{unit:"premium requests",vendor:"copilot",summary:[
+     "Recognized as: GitHub Copilot billing usage CSV",
+     "Unit: premium requests; dollars: from the file's net_amount column",
+     "Members: 3; total: 380 premium requests ($2.00); median: 30 premium requests; heaviest: 350 premium requests; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 3 members drew 92.1 % of the total",
+     "Allowance: per member from the column \"total_monthly_quota\"; at or over: 1; below 20 %: 2; drawn past the allowance: 50 premium requests; left unused by those below: 570 premium requests; members with no allowance recorded: 0"]}},
+  {name:"Copilot billing usage CSV, re-saved by a spreadsheet",files:["copilot/billing-usage-spreadsheet-resave.csv"],
+   expect:{unit:"AI credits",summary:[
+     "Header row: Date,Username,Product,SKU,Model,Quantity,Unit_Type,Net_Amount,Exceeds_Quota,Total_Monthly_Quota,AIC_Quantity",
+     "Recognized as: GitHub Copilot billing usage CSV",
+     "Members: 2; total: 3,200 AI credits ($32.00); median: 1,600 AI credits; heaviest: 2,000 AI credits; members with a zero amount: 0",
+     "at or over: 1; below 20 %: 0; drawn past the allowance: 100 AI credits; left unused by those below: 0 AI credits"]}},
+  {name:"Copilot activity report, named and refused",files:["copilot/activity-report.csv"],
+   expect:{problem:"This looks like the GitHub Copilot activity report"}},
+  {name:"Copilot billing report's own sample",files:["../../copilot-billing-report/sample-usage-report.csv"],
+   expect:{unit:"AI credits",tiles:["Request-metered units: 18"],summary:[
+     "Recognized as: GitHub Copilot billing usage CSV",
+     "Members: 25; total: 27,027 AI credits ($270.59); median: 963 AI credits; heaviest: 5,400 AI credits; members with a zero amount: 3",
+     "Heaviest fifth: 5 of 25 members drew 54.7 % of the total",
+     "at or over: 3; below 20 %: 10; drawn past the allowance: 6,250 AI credits; left unused by those below: 17,735 AI credits"]}},
+
+  /* ---- Claude ------------------------------------------------------------ */
+  {name:"Claude spend report, recognized",files:["claude/spend-report.csv"],
+   expect:{unit:"USD",vendor:"claude",report:["carrying $14.40","carrying $0.80"],summary:[
+     "Recognized as: Claude spend report",
+     "Unit: USD; dollars: the amount is in dollars",
+     "1 row set aside (organization service usage, not attributed to a member)",
+     "1 row set aside (no model)",
+     "Members: 3; total: $86.00; median: $31.50; heaviest: $54.50; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 3 members drew 63.4 % of the total",
+     "Distinct products: 3",
+     "Distinct models: 3"]}},
+  {name:"Claude spend report, alternate headers",files:["claude/spend-report-alternate-headers.csv"],
+   expect:{unit:"USD",report:["carrying $3.00","carrying $1.00","Columns of this export not present in the file"],summary:[
+     "Recognized as: Claude spend report",
+     "Mapping: member = \"email\"; amount = \"net_spend_usd\"",
+     "Members: 2; total: $52.50; median: $26.25; heaviest: $40.00; members with a zero amount: 0"]}},
+  {name:"Claude Code contribution export, named and refused",files:["claude/code-contribution-export.csv"],
+   expect:{problem:"This looks like the Claude Code analytics export"}},
+  {name:"Claude Code contribution export, mapped anyway",files:["claude/code-contribution-export.csv"],
+   steps:[{click:"#anyway"},{choose:{"#map-amount":"Lines with Claude Code"}},{click:"#map-confirm"},{type:{"#unit":"lines"}}],
+   expect:{preselect:{member:"User"},summary:[
+     "Members: 2; total: 340 lines; median: 170 lines; heaviest: 340 lines; members with a zero amount: 1"]}},
+  {name:"Claude spend report's own sample",files:["../../claude-spend-report/sample-spend-report.csv"],
+   expect:{unit:"USD",summary:[
+     "Recognized as: Claude spend report",
+     "Members: 48; total: $3,413.88; median: $29.73; heaviest: $429.45; members with a zero amount: 0",
+     "Heaviest fifth: 10 of 48 members drew 65.3 % of the total"]}},
+
+  /* ---- Cursor ------------------------------------------------------------ */
+  {name:"Cursor usage export, cost in dollars",files:["cursor/usage-events.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"USD"}}],
+   expect:{preselect:{member:"User",amount:"Cost",date:"Date",model:"Model"},summary:[
+     "Recognized as: none, mapped by hand",
+     "amount cells reading \"Included\" read as zero: 2",
+     "amount cells reading \"-\" read as zero: 1",
+     "amount cells reading \"Free\" read as zero: 1",
+     "Members: 5; total: $22.55; median: $0.21; heaviest: $21.50; members with a zero amount: 2",
+     "Heaviest fifth: 1 of 5 members drew 95.3 % of the total",
+     "Dates covered: 2026-09-02T10:01:10.528Z to 2026-09-05T09:00:00.000Z"]}},
+  {name:"Cursor usage export, total tokens",files:["cursor/usage-events.csv"],
+   steps:[{choose:{"#map-amount":"Total Tokens"}},{click:"#map-confirm"},{type:{"#unit":"tokens"}}],
+   expect:{summary:[
+     "Members: 5; total: 1,870,460 tokens; median: 33,000 tokens; heaviest: 1,541,000 tokens; members with a zero amount: 0",
+     "Heaviest fifth: 1 of 5 members drew 82.4 % of the total"]}},
+  {name:"Cursor usage export, two files combined",files:["cursor/usage-events.csv","cursor/usage-events-part-2.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"USD"}}],
+   expect:{dups:"1 row appears in more than one file",summary:[
+     "Files: 2; data rows: 10; duplicate rows across files: 1",
+     "Members: 5; total: $23.11; median: $0.42; heaviest: $21.50; members with a zero amount: 1"]}},
+  {name:"Cursor usage export, a file removed",files:["cursor/usage-events.csv","cursor/usage-events-part-2.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"USD"}},{click:"#filelist button.rm"}],
+   expect:{summary:[
+     "Files: 1; data rows: 2; duplicate rows across files: 0",
+     "Members: 2; total: $0.56; median: $0.28; heaviest: $0.35; members with a zero amount: 0"]}},
+  {name:"Cursor analytics raw data, 2025 headers",files:["cursor/analytics-raw-data-2025.csv"],
+   steps:[{choose:{"#map-amount":"Agent Requests"}},{click:"#map-confirm"},{type:{"#unit":"requests"}}],
+   expect:{preselect:{member:"Email",date:"Date"},summary:[
+     "Members: 2; total: 40 requests; median: 20 requests; heaviest: 40 requests; members with a zero amount: 1"]}},
+  {name:"Cursor AI Code Tracking commits, named and refused",files:["cursor/ai-code-commits.csv"],
+   expect:{problem:"This looks like a Cursor AI Code Tracking export"}},
+  {name:"Cursor AI Code Tracking changes, named and refused",files:["cursor/ai-code-changes.csv"],
+   expect:{problem:"This looks like a Cursor AI Code Tracking export"}},
+  {name:"Cursor Admin API daily usage",files:["cursor/admin-api-daily-usage.csv"],
+   steps:[{choose:{"#map-amount":"usageBasedReqs","#map-date":"day"}},{click:"#map-confirm"},{type:{"#unit":"requests"}}],
+   expect:{preselect:{member:"email",date:"date"},summary:[
+     "Members: 2; total: 6 requests; median: 3 requests; heaviest: 6 requests; members with a zero amount: 1",
+     "Dates covered: 2026-09-01 to 2026-09-02"]}},
+  {name:"Cursor Admin API spend",files:["cursor/admin-api-spend.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"cents"}}],
+   expect:{preselect:{member:"email",amount:"spendCents"},summary:[
+     "Members: 3; total: 19,750.62 cents; median: 4,250.12 cents; heaviest: 15,500.5 cents; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 3 members drew 78.5 % of the total"]}},
+
+  /* ---- Codex ------------------------------------------------------------- */
+  {name:"ChatGPT workspace analytics users export",files:["codex/workspace-analytics-users.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"messages"}}],
+   expect:{preselect:{member:"email",amount:"messages",date:"period_start",seat:"seat_type"},summary:[
+     "Members: 4; total: 837 messages; median: 54 messages; heaviest: 730 messages; members with a zero amount: 1",
+     "Heaviest fifth: 1 of 4 members drew 87.2 % of the total",
+     "Distinct seat types: 3",
+     "Dates covered: 2026-09-07 to 2026-09-21"]}},
+  {name:"ChatGPT Business member usage",files:["codex/business-member-usage.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"credits"}}],
+   expect:{preselect:{member:"Email",amount:"Credits spent",seat:"Seat type"},summary:[
+     "Members: 3; total: 5,700 credits; median: 1,200 credits; heaviest: 4,500 credits; members with a zero amount: 1",
+     "Distinct seat types: 2"]}},
+
+  /* ---- Any vendor -------------------------------------------------------- */
+  {name:"The usage report's own sample",files:["../sample-usage.csv"],
+   steps:[{click:"#map-confirm"},{type:{"#unit":"credits"}}],
+   expect:{preselect:{member:"Member",amount:"Credits used",date:"Period",allowance:"Included allowance",
+     product:"Product",model:"Model",seat:"Seat type"},summary:[
+     "Members: 32; total: 20,908 credits; median: 101 credits; heaviest: 5,350 credits; members with a zero amount: 3",
+     "Heaviest fifth: 7 of 32 members drew 76.3 % of the total",
+     "Allowance: per member from the column \"Included allowance\"; at or over: 2; below 20 %: 19; drawn past the allowance: 530 credits; left unused by those below: 17,937 credits; members with no allowance recorded: 0"]}},
+  {name:"An amount that is not a number stops the report",files:["generic/amount-not-a-number.csv"],
+   steps:[{click:"#map-confirm"}],
+   expect:{preselect:{member:"Member",amount:"Amount"},
+     mapProblem:"The amount column \"Amount\" has 1 cell that could not be read as a number, for example \"n/a\" in data row 2."}},
+  {name:"A blank amount reads as zero and is counted",files:["generic/blank-amount.csv"],
+   steps:[{click:"#map-confirm"}],
+   expect:{summary:[
+     "blank amount cells read as zero: 1",
+     "Members: 3; total: 14 units; median: 4 units; heaviest: 10 units; members with a zero amount: 1"]}},
+  {name:"Files whose header rows differ are not combined",files:["cursor/usage-events.csv","codex/business-member-usage.csv"],
+   expect:{problem:"column 1 of \"business-member-usage.csv\" is \"Name\", where \"usage-events.csv\" has \"Date\""}},
+  {name:"Synthetic data",steps:[{click:"#demo"}],
+   expect:{summary:["synthetic data: yes","Members: 60;"]}}
+];
+
+var FIELDS=["member","amount","date","allowance","product","model","seat"];
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})};
+var q=function(s){return "\""+s+"\""};
+var wait=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+
+function frame(){
+  return new Promise(function(resolve){
+    var f=document.createElement("iframe");
+    f.addEventListener("load",function(){resolve(f)},{once:true});
+    f.src="../index.html";
+    $("#frames").appendChild(f);
+  });
+}
+async function until(test,what){
+  for(var i=0;i<200;i++){if(test())return;await wait(25)}
+  throw new Error("timed out waiting for "+what);
+}
+
+/* The files go in through the page's own file input, as the reader's would. */
+async function drop(f,paths){
+  var w=f.contentWindow,d=f.contentDocument,dt=new w.DataTransfer();
+  for(var i=0;i<paths.length;i++){
+    var r=await fetch(paths[i],{cache:"no-store"});
+    if(!r.ok)throw new Error(paths[i]+" could not be read ("+r.status+")");
+    dt.items.add(new w.File([await r.arrayBuffer()],paths[i].split("/").pop(),{type:"text/csv"}));
+  }
+  var before=d.querySelectorAll("#filelist li").length,input=d.getElementById("file");
+  input.files=dt.files;
+  input.dispatchEvent(new w.Event("change"));
+  await until(function(){
+    return d.querySelectorAll("#filelist li").length!==before||!d.getElementById("problem").hidden;
+  },"the page to read "+paths.join(", "));
+}
+async function step(f,s){
+  var w=f.contentWindow,d=f.contentDocument,el,k;
+  var find=function(sel){
+    var found=d.querySelector(sel);
+    if(found)return found;
+    var p=d.getElementById("problem");
+    throw new Error("the page has no "+sel+(p.hidden?"":"; it shows "+q(p.innerText.replace(/\s+/g," ").trim())));
+  };
+  if(s.click)find(s.click).click();
+  for(k in s.choose||{}){
+    el=find(k);
+    var o=[].filter.call(el.options,function(o){return o.text===s.choose[k]})[0];
+    if(!o)throw new Error(k+" offers no "+q(s.choose[k]));
+    el.value=o.value;
+    el.dispatchEvent(new w.Event("change"));
+  }
+  for(k in s.type||{}){
+    el=find(k);
+    el.value=s.type[k];
+    el.dispatchEvent(new w.Event("input"));
+  }
+  await wait(0);
+}
+function preselected(d){
+  if(d.getElementById("mapper").hidden)return null;
+  var p={};
+  FIELDS.forEach(function(k){var s=d.getElementById("map-"+k);p[k]=s.options[s.selectedIndex].text});
+  return p;
+}
+
+function check(c,f,pre){
+  var d=f.contentDocument,e=c.expect,fails=[];
+  var text=function(id,all){
+    var el=d.getElementById(id);
+    return el&&!el.hidden?(all?el.textContent:el.innerText).replace(/\s+/g," ").trim():"";
+  };
+  /* the report is read in full, the collapsed member table included */
+  var problem=text("problem"),mapProblem=text("map-problem"),report=text("report",true);
+  var summary=d.getElementById("summary")?d.getElementById("summary").value:"";
+  var tiles=[].map.call(d.querySelectorAll("#report .tile"),function(t){
+    return t.querySelector(".k").textContent+": "+t.querySelector(".v").textContent.replace(/\s+/g," ").trim();
+  }).join("\n");
+  var lacks=function(where,body,want){
+    if(body.indexOf(want)!==-1)return;
+    var head=want.split(":")[0],near=body.split("\n").filter(function(l){return l.indexOf(head)===0})[0];
+    fails.push(where+" lacks "+q(want)+(near?"\n  shown: "+q(near):""));
+  };
+  if(e.problem)lacks("the problem",problem||"(no problem shown)",e.problem);
+  else if(problem)fails.push("unexpected problem: "+q(problem));
+  if(e.mapProblem)lacks("the mapper's problem",mapProblem||"(no problem shown)",e.mapProblem);
+  else if(mapProblem)fails.push("unexpected mapper problem: "+q(mapProblem));
+  if(e.preselect){
+    if(!pre)fails.push("the mapper never opened");
+    else FIELDS.forEach(function(k){
+      var want=e.preselect[k]||"(none)";
+      if(pre[k]!==want)fails.push("pre-selected "+k+": expected "+q(want)+", shown "+q(pre[k]));
+    });
+  }
+  (e.summary||[]).forEach(function(s){lacks("the summary",summary,s)});
+  (e.tiles||[]).forEach(function(s){lacks("the tiles",tiles,s)});
+  (e.report||[]).forEach(function(s){lacks("the report",report,s)});
+  if(e.dups)lacks("the file list",text("dups"),e.dups);
+  if(e.unit!==undefined&&d.getElementById("unit").value!==e.unit)
+    fails.push("unit: expected "+q(e.unit)+", shown "+q(d.getElementById("unit").value));
+  if(e.vendor!==undefined&&d.getElementById("vendor").value!==e.vendor)
+    fails.push("vendor: expected "+q(e.vendor)+", shown "+q(d.getElementById("vendor").value));
+  var loaded=f.contentWindow.performance.getEntriesByType("resource").map(function(r){return r.name});
+  if(loaded.length)fails.push("the page loaded "+loaded.join(", ")+"; it must load nothing");
+  return fails;
+}
+
+function row(c,fails){
+  var files=(c.files||[]).map(function(p){return '<a href="'+esc(p)+'"><code>'+esc(p)+'</code></a>'}).join("<br>")||"none";
+  $("#results").insertAdjacentHTML("beforeend",'<tr><td>'+esc(c.name)+
+    (fails.length?'<div class="why">'+esc(fails.join("\n"))+'</div>':'')+'</td><td>'+files+
+    '</td><td class="r '+(fails.length?'fail">FAIL':'pass">PASS')+'</td></tr>');
+}
+
+async function run(){
+  if(location.protocol==="file:"){
+    $("#status").className="fail";
+    $("#status").textContent="This page must be served over HTTP to read its fixtures: run "+
+      "python3 -m http.server from the repository root and open "+
+      "http://localhost:8000/usage-report/test/.";
+    document.title="NOT RUN usage-report tests";
+    return;
+  }
+  var passed=0;
+  for(var i=0;i<CASES.length;i++){
+    var c=CASES[i],f=null,pre=null,fails;
+    try{
+      f=await frame();
+      if(c.files)await drop(f,c.files);
+      pre=preselected(f.contentDocument);
+      for(var s=0;s<(c.steps||[]).length;s++){
+        await step(f,c.steps[s]);
+        pre=pre||preselected(f.contentDocument);
+      }
+      fails=check(c,f,pre);
+    }catch(err){fails=[String(err&&err.message||err)]}
+    if(f)f.remove();
+    if(!fails.length)passed++;
+    row(c,fails);
+  }
+  var all=passed===CASES.length;
+  $("#status").className=all?"pass":"fail";
+  $("#status").textContent=all?"All "+CASES.length+" cases pass.":
+    (CASES.length-passed)+" of "+CASES.length+" cases fail.";
+  document.title=(all?"PASS ":"FAIL ")+passed+"/"+CASES.length+" usage-report tests";
+}
+run();
+})();
+</script>
+</body>
+</html>

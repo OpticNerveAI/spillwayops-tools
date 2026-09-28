@@ -1,0 +1,5 @@
+﻿email,model,net_spend_usd
+dev-001@example.com,claude-sonnet-5,$12.50
+dev-002@example.com,claude-opus-5,40
+(org service usage),claude-sonnet-5,3.00
+dev-002@example.com,,1.00

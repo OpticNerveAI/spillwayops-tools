@@ -1,0 +1,3 @@
+﻿Date,Username,Product,SKU,Model,Quantity,Unit_Type,Net_Amount,Exceeds_Quota,Total_Monthly_Quota,AIC_Quantity
+2026-09-01,dev-001,Copilot,copilot_ai_credits,gpt-5.4-nano,"1,200",AI Credits,12.00,false,1900,1200
+2026-09-02,dev-002,Copilot,copilot_ai_credits,gpt-5.4-nano,2000,AI Credits,20.00,true,1900,2000

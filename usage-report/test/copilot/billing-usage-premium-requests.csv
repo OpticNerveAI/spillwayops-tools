@@ -1,0 +1,5 @@
+date,username,product,sku,model,quantity,unit_type,applied_cost_per_quantity,gross_amount,discount_amount,net_amount,exceeds_quota,total_monthly_quota,organization,cost_center_name
+2026-04-01,dev-001,copilot,copilot_premium_request,gpt-5.5,250,requests,0.04,10.00,10.00,0.00,false,300,acme-eng,platform
+2026-04-02,dev-001,copilot,copilot_premium_request,claude-sonnet-5,100,requests,0.04,4.00,2.00,2.00,true,300,acme-eng,platform
+2026-04-02,dev-002,copilot,copilot_premium_request,gpt-5.5,30,requests,0.04,1.20,1.20,0.00,false,300,acme-eng,
+2026-04-03,dev-003,copilot,copilot_premium_request,gpt-5.4-nano,0,requests,0.04,0.00,0.00,0.00,false,300,acme-eng,

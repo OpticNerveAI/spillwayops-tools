@@ -1,0 +1,4 @@
+userId,day,date,email,isActive,totalLinesAdded,totalLinesDeleted,acceptedLinesAdded,acceptedLinesDeleted,totalApplies,totalAccepts,totalRejects,totalTabsShown,totalTabsAccepted,composerRequests,chatRequests,agentRequests,cmdkUsages,subscriptionIncludedReqs,apiKeyReqs,usageBasedReqs,bugbotUsages,mostUsedModel,applyMostUsedExtension,tabMostUsedExtension,clientVersion
+101,2026-09-01,1788220800000,dev-001@example.com,true,500,20,300,10,5,4,1,200,120,3,10,25,2,38,0,4,0,claude-sonnet-5,ts,ts,2.1.0
+102,2026-09-01,1788220800000,dev-002@example.com,true,50,2,10,1,1,1,0,40,20,0,2,1,0,3,0,0,0,gpt-5.6,py,py,2.1.0
+101,2026-09-02,1788307200000,dev-001@example.com,true,300,10,200,5,3,3,0,150,90,2,5,20,1,26,0,2,0,claude-sonnet-5,ts,ts,2.1.0

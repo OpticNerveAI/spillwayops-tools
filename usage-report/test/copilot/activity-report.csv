@@ -1,0 +1,3 @@
+report_time,login,last_authenticated_at,last_activity_at,last_surface_used
+2026-09-25T12:00:00Z,dev-001,2026-09-24T08:00:00Z,2026-09-24T09:30:00Z,vscode/1.104.0/copilot-chat/0.31.0
+2026-09-25T12:00:00Z,dev-002,2026-08-01T10:00:00Z,,

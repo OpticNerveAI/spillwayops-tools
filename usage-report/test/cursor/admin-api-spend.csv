@@ -1,0 +1,4 @@
+userId,name,email,role,spendCents,overallSpendCents,fastPremiumRequests,hardLimitOverrideDollars,monthlyLimitDollars,effectivePerUserLimitDollars
+user_0000000000000000000001,dev-001,dev-001@example.com,member,4250.12,9800.4,120,100,,100
+user_0000000000000000000002,dev-002,dev-002@example.com,member,0,1200,12,0,,50
+user_0000000000000000000003,dev-003,dev-003@example.com,owner,15500.5,21000,410,100,200,200

@@ -1,0 +1,7 @@
+user_email,account_uuid,product,model,model_family,total_requests,total_prompt_tokens,total_completion_tokens,total_net_spend_usd,total_gross_spend_usd
+dev-001@example.com,6f1c2a3e-0000-4000-8000-000000000001,Claude Code,claude-opus-5,Opus,120,2400000,300000,48.20,48.20
+dev-001@example.com,6f1c2a3e-0000-4000-8000-000000000001,"Office Agents (Excel, PowerPoint, Word)",claude-sonnet-5,Sonnet,40,500000,90000,6.30,6.30
+dev-002@example.com,6f1c2a3e-0000-4000-8000-000000000002,Claude Code,claude-sonnet-5,Sonnet,300,6000000,800000,31.50,35.00
+dev-003@example.com,6f1c2a3e-0000-4000-8000-000000000003,Chat,claude-haiku-4-5,Haiku,10,50000,9000,0.00,0.00
+(org service usage),,Claude Code,claude-sonnet-5,Sonnet,120,2400000,300000,14.40,14.40
+dev-004@example.com,6f1c2a3e-0000-4000-8000-000000000004,Chat,,,5,1000,200,0.80,0.80

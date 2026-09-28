@@ -3,9 +3,9 @@
 Reads a per-member usage CSV from any AI coding vendor and shows how usage is
 distributed across members: how much the heaviest fifth draws, who is at or over
 an allowance, whose allowance went unused, and how many seats recorded no usage.
-The GitHub Copilot billing usage CSV and the Claude spend report are recognized
-by their header rows. Any other per-member CSV, including Cursor and Codex
-exports, goes through a column mapper that you confirm.
+GitHub's Copilot usage reports and the Claude spend report are recognized by
+their header rows. Any other per-member CSV, including Cursor and Codex exports,
+goes through a column mapper that you confirm.
 
 One HTML file. No install, no runtime, no access token.
 
@@ -46,19 +46,30 @@ statement traces to the vendor page linked beside it.
 
 ### GitHub Copilot
 
-An organization owner or billing manager requests the billing usage report from
-GitHub under **Settings → Billing & licensing → Usage**, with no token. Since
-June 2026, consumption is metered in AI credits pooled at the billing entity, at
-one credit per cent, and the pool resets on the first of each month with unused
-credits forfeited ([Usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)).
-The billing usage CSV carries each user's recorded monthly quota, so the
-allowance figures come from the file. It is a different export from the Copilot
-activity report, which lists seat activity with no consumption figures; the tool
-names that file and stops. The usage dashboard and the metrics API are a
-different view of the same activity, updated within two full days and dependent
-on IDE telemetry ([Copilot metrics and the usage dashboard](https://docs.github.com/copilot/concepts/copilot-metrics)).
-The [Copilot billing report](../copilot-billing-report/) in this repository reads
-the same file with the same preset.
+An enterprise owner, organization owner or billing manager opens
+**Billing & Licensing → Usage → AI usage** in GitHub, selects **Get usage
+report**, and receives the AI usage report by email, as a link that expires
+after 24 hours, with no token
+([Viewing your usage of metered products and licenses](https://docs.github.com/en/billing/how-tos/products/view-productlicense-use)).
+The report breaks AI credits down per user, date and model over at most 31 days,
+with the tokens behind each model's credits, and has no per-user quota column
+([Billing reports reference](https://docs.github.com/en/billing/reference/billing-reports)),
+so type an allowance to see who is at or over it. Since June 2026, consumption
+is metered in AI credits pooled at the billing entity, at one credit per cent,
+and the pool resets on the first of each month with unused credits forfeited
+([Usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)).
+
+The billing usage CSV of GitHub's usage-based billing preview carries each
+user's monthly quota and the usage converted to AI credits
+([Copilot billing preview report format](https://github.com/github/copilot-billing-preview/blob/main/docs/report-format.md));
+it is recognized too, and there the allowance figures come from the file. The
+[Copilot billing report](../copilot-billing-report/) in this repository reads
+that file with the same preset. Neither is the Copilot activity report, which
+lists each user's last activity and last surface used with no consumption
+figures ([Metrics data properties for GitHub Copilot](https://docs.github.com/en/copilot/reference/metrics-data));
+the tool names that file and stops. The usage dashboard and the metrics API are
+a different view of the same activity, updated within two full days and
+dependent on IDE telemetry ([Copilot metrics and the usage dashboard](https://docs.github.com/copilot/concepts/copilot-metrics)).
 
 ### Claude Code
 
@@ -81,21 +92,41 @@ file with the same preset.
 
 ### Cursor
 
-On Teams, an Admin opens the dashboard's analytics: a daily usage chart over the
-preceding 365 days with a CSV download per chart, filtered to at most ten users
+On Teams, an Admin opens the dashboard's Usage page and selects **Export CSV**
+above the events table. The file lists requests, with the member in a `User`
+column and the charge in a `Cost` column: a dollar figure for on-demand usage, and
+the word `Included` for usage the plan covers, where nothing is charged. Summing
+the Cost column gives the spend for the range. A member who has left the team, or
+whose record does not resolve, appears by a numeric user ID instead of an email.
+These statements come from Cursor staff on Cursor's forum
+([New Spending/Usage tabs no longer shows $ spent](https://forum.cursor.com/t/166548),
+[Usage Page $$ to Token Amount? WHAT?](https://forum.cursor.com/t/167153),
+[Question About Numeric User IDs in Exported Usage Details](https://forum.cursor.com/t/167128),
+[Remaining budget and spending unclear on Dashboard](https://forum.cursor.com/t/169020));
+no Cursor documentation page lists the columns of this file. The tool reads a
+Cost cell of `Included`, `Free` or `-` as zero and counts those cells by name in
+the report, so the Cost total is on-demand spend.
+
+The dashboard's analytics page also offers a CSV download per chart, with the
+daily usage chart covering the preceding 365 days, filtered to at most ten users
 and 90 continuous days at a time, with data collected only from clients on
 version 1.5 or higher ([Analytics](https://cursor.com/docs/account/teams/analytics)).
-Members have no access to the admin dashboard ([Members, Roles, and Seat Types](https://cursor.com/docs/account/teams/members)).
-On Enterprise, the Admin API returns per-user on-demand spend in cents, total
-spend including included usage, daily per-user usage over at most 30 days, and
-per-request usage events; it needs an API key and this page never calls it
+The page does not list the columns of these downloads. Members have no access to
+the admin dashboard ([Members, Roles, and Seat Types](https://cursor.com/docs/account/teams/members)).
+On Team and Enterprise plans ([Dashboard](https://cursor.com/docs/account/teams/dashboard)),
+the Admin API returns per-user on-demand spend in cents, total spend including
+included usage, daily per-user usage over at most 30 days, and per-request usage
+events; it needs an API key and this page never calls it
 ([Admin API](https://cursor.com/docs/account/teams/admin-api)). Ten users per
 filter means a team of forty is at least four files exported from the same chart;
 drop them together and the tool combines them when the header rows are identical.
 Included usage and on-demand spend are separate figures in Cursor's dashboard
 ([Team Pricing](https://cursor.com/docs/account/teams/pricing)); label the unit
-with whichever the chart you exported shows. No Cursor export has been verified
-against this tool, so the mapper opens.
+with whichever the file you exported shows. The AI Code Tracking API's
+`commits.csv` and `changes.csv` count lines of code with no usage amounts
+([AI Code Tracking API](https://cursor.com/docs/account/teams/ai-code-tracking-api));
+the tool names them and stops. No Cursor export has been verified against this
+tool, so the mapper opens.
 
 ### Codex
 
@@ -104,42 +135,58 @@ type, credits spent and messages sent, over seven days, one month, six months,
 twelve months, or a custom window ([ChatGPT Business Release Notes](https://help.openai.com/en/articles/11391654-chatgpt-business-release-notes)),
 and Owners download usage reports under Billing ([Flexible pricing for the Enterprise, Edu, and Business plans](https://help.openai.com/en/articles/11487671-flexible-pricing-for-the-enterprise-edu-and-business-plans)).
 On Enterprise, the Admin Console breaks credit spend down by user, product and
-model, with a Cost API ([New usage analytics and updated spend controls for enterprises](https://openai.com/index/chatgpt-enterprise-spend-controls/)),
-and CSV exports cover up to twelve months with data lagging by one to 24 hours
+model, with a Cost API ([New usage analytics and updated spend controls for enterprises](https://openai.com/index/chatgpt-enterprise-spend-controls/)).
+On Enterprise and Edu, workspace analytics exports CSV reports covering up to
+twelve months, refreshed every one to 24 hours; the Users export is a per-member
+report whose documented columns include `email`, `seat_type`, `messages` and
+`period_start`, and none of its documented columns carries credits or dollars
 ([Workspace analytics for ChatGPT Enterprise and Edu](https://help.openai.com/en/articles/10875114)).
-Usage inside a seat's five-hour and weekly windows is not metered in dollars;
+No cited page lists the columns of the Business member table or of the Billing
+usage reports, or says that the member table can be exported. Usage inside a seat's five-hour and weekly windows is not metered in dollars;
 only usage past them draws credits, at a rate card in credits per million tokens
 ([ChatGPT Rate Card](https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing)).
 What a credit costs in dollars depends on the plan or agreement
 ([Pricing](https://learn.chatgpt.com/docs/pricing)), and no cited page prices a
 Business credit, so the tool never supplies a dollar rate for Codex credits. No
-Codex export has been verified against this tool, so the mapper opens.
+Codex export has been verified against this tool, so the mapper opens, with the
+Users export's `email`, `messages`, `period_start` and `seat_type` columns
+pre-selected for you to confirm.
 
 ## Verified presets
 
 A preset is a header set that has been verified against a real export or the
 vendor's documented column list. A file whose headers match a preset is mapped
-without asking, and the report names the export it recognized. Two presets
-exist, and they are the two the vendor tools in this repository already read:
+without asking, and the report names the export it recognized. Three presets
+exist: the two files the vendor tools in this repository already read, and
+GitHub's AI usage report, by the columns GitHub documents for it:
 
 | Preset | Recognized by | Read as |
 |---|---|---|
-| GitHub Copilot billing usage CSV | `username`, `quantity` and `unit_type`, with at least one of `aic_quantity`, `total_monthly_quota` and `exceeds_quota` | Member from `username`; amount in AI credits from `aic_quantity`, or from `quantity` on rows whose `unit_type` names credits; allowance from `total_monthly_quota`; `model` and `date`; dollars from the file's own `net_amount` column. Rows whose `product` is not Copilot are set aside, and request-metered rows are counted separately and never added to credits. |
+| GitHub AI usage report | `username`, `quantity`, `unit_type` and `model`, with at least one of `input`, `output`, `cache_read` and `cache_write` | Read as the billing usage CSV below. The file has no quota column, so a typed allowance is the only allowance. |
+| GitHub Copilot billing usage CSV | `username`, `quantity` and `unit_type`, with at least one of `aic_quantity`, `total_monthly_quota` and `exceeds_quota` | Member from `username`; amount in AI credits from `aic_quantity`, or from `quantity` on rows whose `unit_type` is not requests, as GitHub's billing preview documents the field; allowance from `total_monthly_quota` on rows in AI credits; `model` and `date`; dollars from the file's own `net_amount` column. Rows whose `product` is not Copilot are set aside, and request-metered rows are counted separately and never added to credits. A file with no credit rows at all, from before AI credits, is read in premium requests instead: `quantity` is the amount and `total_monthly_quota` the allowance, both in requests. |
 | Claude spend report | A member column (`user_email`, `email`, `user`, `member_email`, `member` or `user email`) and a net spend column (`total_net_spend_usd`, `net_spend_usd`, `total_net_spend` or `net_spend`), with `product` or `model` | Member from the member column; amount in dollars from the net spend column; `product` and `model`. Organization service usage rows and rows with no model are set aside and reported. |
 
-The alias lists are copied from the two vendor tools. Headers are matched
-case-insensitively after trimming.
+The billing usage CSV and Claude alias lists are copied from the two vendor
+tools; the AI usage report's columns are those in GitHub's
+[Billing reports reference](https://docs.github.com/en/billing/reference/billing-reports).
+Headers are matched case-insensitively after trimming.
 
 **No other vendor is recognized.** A preset for Cursor or Codex is added only
 after a real export, or the vendor's documented column list, has confirmed the
 header row. Until then those files go through the mapper, and the redacted
 summary described below is how a verified header set reaches this repository.
 
-Two known exports from the same vendors carry no usage amounts and are named
+Three known exports from the same vendors carry no usage amounts and are named
 rather than reported as a missing column: the Claude Code analytics export
-(member emails and lines of code) and the Copilot activity report (seat
-activity). For each, the tool names the file it needs and where it comes from.
-If the detection is wrong for your file, a button opens the mapper anyway.
+(member emails and lines of code), the Copilot activity report (seat
+activity), and Cursor's AI Code Tracking CSVs (`commits.csv` and `changes.csv`,
+recognized by the columns Cursor's API reference lists). For each, the tool
+names the file it needs and where it comes from. A file with lines-of-code
+columns is named as the Claude Code analytics export only when no column could
+be an amount (spend, cost, credits, amount, quantity, usage, or request counts
+other than pull requests), so a Cursor analytics or daily usage export, which
+carries both, goes to the mapper. If the detection is wrong for your file, a
+button opens the mapper anyway.
 
 ## The mapping model
 
@@ -157,8 +204,12 @@ the file, chosen from a list of its headers.
 | Seat type | No | A breakdown by seat type, and a column in the member table. |
 
 A header that matches a generic name, or a field the vendor pages describe for
-Cursor and Codex exports (member, seat type, credits spent, spend in cents), is
-pre-selected and marked as such. Pre-selection is a convenience and never a
+Cursor and Codex exports (member, seat type, credits spent, spend in cents,
+on-demand spend, included usage), is pre-selected and marked as such. Headers are
+compared after splitting camelCase and treating underscores, hyphens, dots and
+parentheses as spaces, so `spendCents`, `spend_cents` and `Spend (cents)` match
+alike. Cursor's included usage is usage, so it is offered as an amount, never as
+an allowance. Pre-selection is a convenience and never a
 recognition: the report is drawn only when you choose to draw it. The first five
 rows of the chosen columns are shown before you do.
 
@@ -167,8 +218,10 @@ Validation stops the report and names the problem:
 - A missing member or amount choice is named, and nothing is drawn.
 - Every cell of the amount column is parsed. A cell that is not a number stops
   the report with the column, the count of failing cells, and an example. A blank
-  cell is read as zero and the count of blank cells is shown in the report.
-  Accepted forms are plain numbers, a leading or trailing dollar, euro or pound
+  cell is read as zero and the count of blank cells is shown in the report. A
+  cell reading `Included`, `Free` or `-` is also read as zero, and the report
+  counts each by name: Cursor's usage export writes `Included` in its Cost column
+  where the plan covers the usage and nothing is charged. Accepted forms are plain numbers, a leading or trailing dollar, euro or pound
   sign, thousands separators in the `1,234` pattern, and parentheses for a
   negative.
 - The same column chosen for two fields is refused.
@@ -190,7 +243,7 @@ you confirmed is kept for files with the same header row.
 | Per-member allowance or limit | The value every member is compared with, in the amount column's unit. A typed value overrides an allowance column. |
 | Unused when below this share of the allowance | The threshold, in percent, below which a member's allowance counts as unused. The default is 20. |
 | Seats in the organization | When it is larger than the members in the file, the difference is shown as seats with no usage recorded, labeled as inferred from the seat count. |
-| Unit of the amount column | The label every figure carries. A recognized export fills it in (AI credits for Copilot, USD for Claude). `USD` or `dollars` formats every figure as dollars. |
+| Unit of the amount column | The label every figure carries. A recognized export fills it in (AI credits for Copilot, or premium requests for a Copilot file with no credit rows, and USD for Claude). `USD` or `dollars` formats every figure as dollars. |
 | Dollars per unit | Optional. Blank unless a recognized export carries a value with a cited source, and none does at present: the Copilot file carries its own `net_amount` column in dollars, the Claude file is already in dollars, and no cited page prices a Codex credit. A rate you type is shown beside every converted figure as the rate you typed. |
 
 None of these values leaves the page.
@@ -253,11 +306,21 @@ export came from.
 - **A mapping the reader confirmed is only as right as the reader.** The preview
   shows the first rows of each chosen column for that reason, and the amount
   column is parsed in full before anything is drawn.
-- **Blank amount cells read as zero.** Their count is shown. A cell that is not
-  a number stops the report.
-- **Export formats change.** The two presets match header sets read from real
-  files; if a vendor renames a column, the file falls through to the mapper
+- **Blank amount cells, and cells reading Included, Free or a dash, read as
+  zero.** Each count is shown. Any other cell that is not a number stops the
+  report.
+- **Export formats change.** The presets match header sets read from real
+  files or from the vendor's documented column list; if a vendor renames a column, the file falls through to the mapper
   rather than being read wrongly. Corrections by pull request are welcome.
+
+## Tests
+
+[`test/`](test/) holds synthetic CSV files in each vendor's export formats,
+from GitHub Copilot, Claude, Cursor and Codex, and a page that drops each one on
+this report and checks what it shows against figures worked out by hand. Its
+[README](test/README.md) says where each file's format comes from and how far it
+is established, and how to run the page in a browser or from a terminal. Run it
+after any change to this file.
 
 ## The copy on the site
 

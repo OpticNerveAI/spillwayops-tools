@@ -1,0 +1,6 @@
+date,product,sku,quantity,unit_type,applied_cost_per_quantity,gross_amount,discount_amount,net_amount,username,organization,repository,cost_center_name,model,input,output,cache_read,cache_write
+2026-09-01,copilot,copilot_ai_credits,2600,AI Credits,0.01,26.00,19.00,7.00,dev-001,acme-eng,,platform,gpt-5.5,410000,62000,1850000,120000
+2026-09-02,copilot,copilot_ai_credits,1400,AI Credits,0.01,14.00,0.00,14.00,dev-001,acme-eng,,platform,claude-sonnet-5,250000,40000,900000,60000
+2026-09-01,copilot,copilot_ai_credits,900,AI Credits,0.01,9.00,9.00,0.00,dev-002,acme-eng,,platform,gpt-5.4-nano,300000,30000,700000,0
+2026-09-03,copilot,copilot_ai_credits,300,AI Credits,0.01,3.00,3.00,0.00,dev-003,acme-eng,,,claude-opus-5,20000,4000,90000,10000
+2026-09-04,copilot,copilot_ai_credits,0,AI Credits,0.01,0.00,0.00,0.00,dev-004,acme-eng,,,gemini-3-flash,0,0,0,0

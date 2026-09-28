@@ -144,8 +144,9 @@ a:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:2
 <p class="sub">Reads a per-member usage CSV from GitHub Copilot, Claude Code, Cursor,
 Codex or any other vendor and shows how usage is distributed: how much the heaviest
 fifth of members draws, who is at or over an allowance, whose allowance went unused,
-and how many seats recorded no usage. Two exports are recognized by their header row.
-Any other file goes through a column mapper that you confirm. The files are parsed in
+and how many seats recorded no usage. GitHub's Copilot usage reports and the Claude
+spend report are recognized by their header rows. Any other file goes through a column
+mapper that you confirm. The files are parsed in
 this page. Nothing is uploaded and this page makes no network requests of any kind.</p>
 
 <div id="drop">
@@ -223,28 +224,39 @@ this page. Nothing is uploaded and this page makes no network requests of any ki
 
 <section class="guide" id="guide">
   <h2>Where each vendor's export comes from, and what it does not carry</h2>
-  <p>Each statement below is written from the vendor documentation it links. The two
-  vendor tools published beside this one, the Copilot billing report and the Claude
-  spend report, read the same two files with the same verified presets. No Cursor or
-  Codex export has been verified yet, so those files go through the column mapper, and
-  a preset for either is added only after a real export or the vendor's documented
-  column list has confirmed the header row.</p>
+  <p>Each statement below is written from the vendor source it links: the vendor's
+  documentation, or for Cursor's usage export, Cursor staff on Cursor's forum. The
+  Copilot billing report and the Claude spend report published beside this one read
+  the Copilot billing usage CSV and the Claude spend report with the same verified
+  presets; this tool also recognizes GitHub's AI usage report by the columns GitHub
+  documents for it. No Cursor or Codex export has been verified yet, so those files go
+  through the column mapper, and a preset for either is added only after a real export
+  or the vendor's documented column list has confirmed the header row.</p>
 
   <h3>GitHub Copilot</h3>
-  <p><strong>Where it comes from.</strong> An organization owner or billing manager
-  requests the billing usage report from GitHub under Settings &rarr; Billing &amp;
-  licensing &rarr; Usage. No token is needed. Since June 2026, consumption is metered in
-  AI credits pooled at the billing entity, at one credit per cent, and the pool resets
-  on the first of each month with unused credits forfeited.</p>
-  <p><strong>What it does not carry.</strong> The billing usage CSV is recognized here by
-  its header row and carries each user's recorded monthly quota, so the allowance tiles
-  come from the file. It is not the Copilot activity report, which lists seat activity
-  with no consumption figures; that file is named and refused. The usage dashboard and
-  the metrics API are a different view of the same activity, updated within two full
-  days, dependent on telemetry being enabled in each developer's IDE, and excluding
-  Copilot Chat on GitHub.com and GitHub Mobile.</p>
+  <p><strong>Where it comes from.</strong> An enterprise owner, organization owner or
+  billing manager opens Billing &amp; Licensing &rarr; Usage &rarr; AI usage in GitHub,
+  selects Get usage report, and receives the AI usage report by email, as a link that
+  expires after 24 hours. It breaks AI credits down per user, date and model, over at
+  most 31 days, with the tokens behind each model's credits. No token is needed. Since
+  June 2026, consumption is metered in AI credits pooled at the billing entity, at one
+  credit per cent, and the pool resets on the first of each month with unused credits
+  forfeited.</p>
+  <p><strong>What it does not carry.</strong> The AI usage report has no per-user quota
+  column, so type an allowance to see who is at or over it. The billing usage CSV of
+  GitHub's usage-based billing preview carries each user's monthly quota and the usage
+  converted to AI credits; it is recognized too, and there the allowance comes from the
+  file. Neither is the Copilot activity report, which lists each user's last activity
+  and last surface used with no consumption figures; that file is named and refused.
+  The usage dashboard and the metrics API are a different view of the same activity,
+  updated within two full days, dependent on telemetry being enabled in each
+  developer's IDE, and excluding Copilot Chat on GitHub.com and GitHub Mobile.</p>
   <p class="refs">Sources: GitHub Docs,
-  <a href="https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises" rel="noopener">Usage-based billing for organizations and enterprises</a>;
+  <a href="https://docs.github.com/en/billing/reference/billing-reports" rel="noopener">Billing reports reference</a>;
+  GitHub Docs, <a href="https://docs.github.com/en/billing/how-tos/products/view-productlicense-use" rel="noopener">Viewing your usage of metered products and licenses</a>;
+  GitHub, <a href="https://github.com/github/copilot-billing-preview/blob/main/docs/report-format.md" rel="noopener">Copilot billing preview report format</a>;
+  GitHub Docs, <a href="https://docs.github.com/en/copilot/reference/metrics-data" rel="noopener">Metrics data properties for GitHub Copilot</a>;
+  GitHub Docs, <a href="https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises" rel="noopener">Usage-based billing for organizations and enterprises</a>;
   GitHub Docs, <a href="https://docs.github.com/copilot/concepts/copilot-metrics" rel="noopener">Copilot metrics and the usage dashboard</a>.</p>
 
   <h3>Claude Code</h3>
@@ -270,43 +282,67 @@ this page. Nothing is uploaded and this page makes no network requests of any ki
 
   <h3>Cursor</h3>
   <p><strong>Where it comes from.</strong> On Teams, an Admin opens the dashboard's
-  analytics: a daily usage chart over the preceding 365 days with a CSV download per
-  chart, filtered to at most ten users and 90 continuous days at a time, with data
+  Usage page and selects Export CSV above the events table. The file lists requests,
+  with the member in a User column and the charge in a Cost column: a dollar figure for
+  on-demand usage, and the word Included for usage the plan covers, where nothing is
+  charged. A member who has left the team, or whose record does not resolve, appears
+  by a numeric user ID instead of an email. The dashboard's analytics page also offers
+  a CSV download per chart, with the daily usage chart covering the preceding 365
+  days, filtered to at most ten users and 90 continuous days at a time, with data
   collected only from clients on version 1.5 or higher. Members have no access to the
-  admin dashboard. On Enterprise, the Admin API returns per-user on-demand spend in
-  cents, total spend including included usage, daily per-user usage over at most 30
-  days and per-request usage events; it needs an API key and is not called by this
-  page.</p>
-  <p><strong>What it does not carry.</strong> One chart at a time and ten users per
-  filter means a team of forty is at least four files, exported from the same chart
-  with the same columns. Drop them together: this tool combines files whose header rows
-  are identical and counts any row that appears in more than one file, though two
-  exports that overlap without a date column cannot be told apart beyond exact
-  duplicates. No Cursor export has been verified against this tool, so the mapper opens
-  and you confirm which column is the member and which is the amount. Included usage
-  and on-demand spend are separate figures in Cursor's dashboard; label the unit with
-  whichever the chart you exported shows.</p>
+  admin dashboard. On Team and Enterprise plans, the Admin API returns per-user
+  on-demand spend in cents, total spend including included usage, daily per-user usage
+  over at most 30 days and per-request usage events; it needs an API key and is not
+  called by this page.</p>
+  <p><strong>What it does not carry.</strong> No Cursor documentation page lists the
+  columns of either dashboard CSV; the Usage export's User and Cost columns and its
+  Included cells are described by Cursor staff on Cursor's forum. This tool reads a
+  Cost cell of Included, Free or a dash as zero and counts those cells by name in the
+  report, so the Cost total is on-demand spend, the figure Cursor staff say that sum
+  gives. Ten users per analytics filter means a team of forty is at least four files,
+  exported from the same chart with the same columns. Drop them together: this tool
+  combines files whose header rows are identical and counts any row that appears in
+  more than one file, though two exports that overlap without a date column cannot be
+  told apart beyond exact duplicates. No Cursor export has been verified against this
+  tool, so the mapper opens and you confirm which column is the member and which is
+  the amount. Included usage and on-demand spend are separate figures in Cursor's
+  dashboard; label the unit with whichever the file you exported shows. The AI Code
+  Tracking CSVs count lines of code with no usage amounts, and this tool names them and
+  stops.</p>
   <p class="refs">Sources: Cursor Docs,
   <a href="https://cursor.com/docs/account/teams/analytics" rel="noopener">Analytics</a>;
   Cursor Docs, <a href="https://cursor.com/docs/account/teams/admin-api" rel="noopener">Admin API</a>;
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/dashboard" rel="noopener">Dashboard</a>;
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/ai-code-tracking-api" rel="noopener">AI Code Tracking API</a>;
   Cursor Docs, <a href="https://cursor.com/docs/account/teams/members" rel="noopener">Members, Roles, and Seat Types</a>;
-  Cursor Docs, <a href="https://cursor.com/docs/account/teams/pricing" rel="noopener">Team Pricing</a>.</p>
+  Cursor Docs, <a href="https://cursor.com/docs/account/teams/pricing" rel="noopener">Team Pricing</a>;
+  Cursor staff on the Cursor Forum,
+  <a href="https://forum.cursor.com/t/166548" rel="noopener">New Spending/Usage tabs no longer shows $ spent</a>,
+  <a href="https://forum.cursor.com/t/167153" rel="noopener">Usage Page $$ to Token Amount? WHAT?</a>,
+  <a href="https://forum.cursor.com/t/167128" rel="noopener">Question About Numeric User IDs in Exported Usage Details</a> and
+  <a href="https://forum.cursor.com/t/169020" rel="noopener">Remaining budget and spending unclear on Dashboard</a>.</p>
 
   <h3>Codex</h3>
   <p><strong>Where it comes from.</strong> On ChatGPT Business, workspace analytics
   shows usage by member, including seat type, credits spent and messages sent, over
   seven days, one month, six months, twelve months or a custom window, and Owners
   download usage reports under Billing. On Enterprise, the Admin Console breaks credit
-  spend down by user, product and model, with a Cost API and CSV exports covering up to
-  twelve months, with data lagging by one to 24 hours.</p>
-  <p><strong>What it does not carry.</strong> Usage inside a seat's five-hour and weekly
-  windows is not metered in dollars; only usage past them draws credits, at a rate card
-  in credits per million tokens. What a credit costs in dollars depends on the plan or
-  agreement, and no cited page prices a Business credit, so this tool never supplies a
-  dollar rate for Codex credits; type one only if your agreement states it. No Codex
-  export has been verified against this tool, so the mapper opens; documented column
-  names such as seat type and credits spent are pre-selected when they match, and you
-  confirm each choice.</p>
+  spend down by user, product and model, with a Cost API. On Enterprise and Edu,
+  workspace analytics exports CSV reports covering up to twelve months, refreshed every
+  one to 24 hours; its Users export is a per-member report whose documented columns
+  include <code>email</code>, <code>seat_type</code>, <code>messages</code> and
+  <code>period_start</code>.</p>
+  <p><strong>What it does not carry.</strong> The Users export counts messages, and none
+  of its documented columns carries credits or dollars. No cited page lists the columns
+  of the Business member table or of the Billing usage reports, or says that the member
+  table can be exported. Usage inside a seat's five-hour and weekly windows is not
+  metered in dollars; only usage past them draws credits, at a rate card in credits per
+  million tokens. What a credit costs in dollars depends on the plan or agreement, and
+  no cited page prices a Business credit, so this tool never supplies a dollar rate for
+  Codex credits; type one only if your agreement states it. No Codex export has been
+  verified against this tool, so the mapper opens. The Users export's email, messages,
+  period_start and seat_type columns are pre-selected, as is a credits spent column if
+  a file carries one, and you confirm each choice.</p>
   <p class="refs">Sources: OpenAI Help Center,
   <a href="https://help.openai.com/en/articles/11391654-chatgpt-business-release-notes" rel="noopener">ChatGPT Business Release Notes</a>;
   OpenAI Help Center, <a href="https://help.openai.com/en/articles/11487671-flexible-pricing-for-the-enterprise-edu-and-business-plans" rel="noopener">Flexible pricing for the Enterprise, Edu, and Business plans</a>;
@@ -376,9 +412,14 @@ function parseCSV(text){
 }
 
 /* ---- numbers: a cell parses or it does not; nothing is coerced --------- */
+/* Words a vendor writes in a cost column in place of a figure. Cursor's usage
+   export writes Included where the plan covers the usage and no dollar amount
+   is charged. A marker reads as zero and the report counts each one by name. */
+var MARKERS=/^(included|free|-)$/i;
 function parseNum(v){
   var s=String(v==null?"":v).trim();
   if(s==="")return {empty:true,n:0};
+  if(MARKERS.test(s))return {marker:s,n:0};
   var neg=false;
   if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1).trim()}
   s=s.replace(/^[$€£]\s*|\s*[$€£]$/g,"");
@@ -392,18 +433,26 @@ function parseNum(v){
 /* ---- headers ------------------------------------------------------------ */
 var hnorm=function(h){return String(h==null?"":h).replace(/^﻿/,"").trim()};
 var hkey=function(h){return hnorm(h).toLowerCase()};
-var hloose=function(h){return hkey(h).replace(/[_\-.\s]+/g," ").trim()};
+/* loose form for pre-selection: camelCase split, separators to one space, so
+   spendCents, spend_cents and "Spend (cents)" all read as "spend cents" */
+var hloose=function(h){return hnorm(h).replace(/([a-z0-9])([A-Z])/g,"$1 $2").toLowerCase()
+  .replace(/[_\-.\s()]+/g," ").trim()};
 function idxOf(head){var idx={};head.forEach(function(h,i){var k=hkey(h);if(!(k in idx))idx[k]=i});return idx}
 function ix(idx,name){return (name in idx)?idx[name]:-1}
 function alias(idx,list){for(var a=0;a<list.length;a++){if(list[a] in idx)return idx[list[a]]}return -1}
 function base(){return {member:-1,amount:-1,date:-1,allowance:-1,product:-1,model:-1,seat:-1}}
 
-/* Header names of the two verified exports, as the two vendor tools beside
-   this one read them. Copied from copilot-billing-report and
-   claude-spend-report; the first alias found wins. */
+/* Header names of the verified exports. GitHub's AI usage report is the
+   per-user AI credits report its billing reports reference lists; the
+   billing usage CSV, read by copilot-billing-report beside this one, adds each
+   user's monthly quota and the usage converted to AI credits. The Claude
+   names are copied from claude-spend-report; the first alias found wins. */
 var COPILOT_REQUIRED=["username","quantity","unit_type"];
+var COPILOT_QUOTA=["aic_quantity","total_monthly_quota","exceeds_quota"];
+var COPILOT_TOKENS=["input","output","cache_read","cache_write"];
 var COPILOT_USEFUL=["date","product","model","exceeds_quota","total_monthly_quota",
                     "aic_quantity","net_amount","organization","cost_center_name"];
+var COPILOT_AI_USEFUL=["date","product","model","net_amount","organization","cost_center_name"];
 var CLAUDE_ALIASES={
   user:      ["user_email","email","user","member_email","member","user email"],
   account:   ["account_uuid","account_id","account uuid","uuid"],
@@ -420,57 +469,100 @@ var CLAUDE_ALIASES={
 /* Known exports from the same vendors that carry no usage amounts. Named
    rather than reported as a missing column. */
 var WRONG=[
-  {test:function(idx,keys){return alias(idx,CLAUDE_ALIASES.net)<0&&keys.some(function(h){return /lines/.test(h)})},
+  /* Cursor's AI Code Tracking CSVs, by the columns its API reference lists */
+  {test:function(idx){return ("commit_hash" in idx||"change_id" in idx)&&("user_email" in idx)&&("total_lines_added" in idx)},
+   message:"This looks like a Cursor AI Code Tracking export (commits or code changes, counted in lines "+
+     "of code), which carries no usage amounts. This tool needs a usage export: in the Cursor dashboard, "+
+     "open Usage, then select Export CSV above the events table."},
+  /* lines of code and nothing that could be an amount: a Cursor daily usage
+     export also carries lines columns, beside its request counts, while a
+     count of pull requests is contribution data, not an amount */
+  {test:function(idx,keys,head){var loose=head.map(hloose);
+     return alias(idx,CLAUDE_ALIASES.net)<0&&loose.some(function(h){return /lines/.test(h)})&&
+       !loose.some(function(h){return /\b(spend|cost|credits?|amount|quantity|reqs|usage)\b/.test(h)||
+         (/\brequests\b/.test(h)&&!/\bpull requests\b/.test(h))})},
    message:"This looks like the Claude Code analytics export (member emails and lines of code), "+
      "which carries no spend. This tool needs the spend report: in claude.ai, open Settings, "+
      "then Analytics, then How much is Claude costing?, then Export spend report."},
   {test:function(idx){return !("quantity" in idx)&&("last_activity_at" in idx||"last_surface_used" in idx)},
    message:"This looks like the GitHub Copilot activity report (seat activity with no consumption "+
-     "figures). This tool needs the billing usage report: in GitHub, open Settings, then Billing "+
-     "& licensing, then Usage, then request a usage report."}
+     "figures). This tool needs the AI usage report: in GitHub, open Billing & Licensing, then "+
+     "Usage, then AI usage, then Get usage report."}
 ];
 
+/* Both Copilot exports are read the same way. As GitHub's billing preview
+   documents the format, a unit_type of requests is request usage and any
+   other unit_type is AI credits. */
+function copilotBuild(idx,data,useful){
+  var m=base();
+  m.member=idx.username; m.amount=idx.quantity;
+  m.date=ix(idx,"date"); m.allowance=ix(idx,"total_monthly_quota"); m.model=ix(idx,"model");
+  m.amountCols=[];
+  if("aic_quantity" in idx)m.amountCols.push({name:"aic_quantity",col:idx.aic_quantity});
+  m.amountCols.push({name:"quantity",col:idx.quantity});
+  if("net_amount" in idx)m.dollars={col:idx.net_amount,name:"net_amount"};
+  m.skip=function(g){
+    if("product" in idx){var p=g(idx.product).toLowerCase();
+      if(p&&p.indexOf("copilot")===-1)return "product not Copilot"}
+    return null;
+  };
+  var creditUnit=function(g){return g(idx.unit_type).toLowerCase().indexOf("request")===-1};
+  var isCredit=function(g){
+    return (("aic_quantity" in idx)&&g(idx.aic_quantity)!=="")||creditUnit(g);
+  };
+  var hasCredit=data.some(function(row){
+    var g=function(i){return (i>=0&&i<row.length)?String(row[i]).trim():""};
+    return !m.skip(g)&&isCredit(g);
+  });
+  m.missing=useful.filter(function(c){return !(c in idx)});
+  if(!hasCredit){
+    /* a file from before AI credits: premium requests are the only unit in
+       it, so they are the amount and the monthly quota is in requests too */
+    m.unit="premium requests";
+    m.rowAmount=function(g){return parseNum(g(idx.quantity)).n||0};
+    m.described="Read as: username as the member; premium requests from quantity as the "+
+      "amount, because no row of this file is denominated in AI credits; "+
+      "total_monthly_quota as the allowance, in requests; model and date; and net_amount "+
+      "as the file's own dollar figure. Rows whose product is not Copilot are set aside.";
+    return m;
+  }
+  /* credits: prefer the explicit AI-credit column; else quantity when the row
+     is denominated in credits. Request-denominated rows are counted
+     separately and never silently added to a credit total, and a quota on a
+     row in requests is in requests, so it is not read as a credit allowance. */
+  m.rowAmount=function(g,acc){
+    if(isCredit(g)){
+      var aic=("aic_quantity" in idx)?g(idx.aic_quantity):"";
+      return parseNum(aic!==""?aic:g(idx.quantity)).n||0;
+    }
+    acc.requests=(acc.requests||0)+(parseNum(g(idx.quantity)).n||0);
+    return 0;
+  };
+  m.rowAllowance=creditUnit;
+  m.extras=function(acc){
+    return acc.requests?[["Request-metered units",fmtInt(acc.requests),"counted separately, never added to credits"]]:[];
+  };
+  m.described="Read as: username as the member; AI credits from aic_quantity where the file "+
+    "has it, or from quantity on rows whose unit_type is not requests, as the amount; "+
+    "total_monthly_quota on rows in AI credits as the allowance, where the file has it; model "+
+    "and date; and net_amount as the file's own dollar figure. Rows whose product is not "+
+    "Copilot are set aside, and request-metered rows are counted separately.";
+  return m;
+}
+var has=function(idx){return function(c){return c in idx}};
+
 /* Verified exports. A preset is recognized by its header set and mapped
-   without asking. Only header sets read from real files are here. */
+   without asking. Only header sets read from real files or from the vendor's
+   documented column list are here. */
 var PRESETS=[
   {id:"copilot",name:"GitHub Copilot billing usage CSV",vendor:"copilot",unit:"AI credits",
+   detect:function(idx){return COPILOT_REQUIRED.every(has(idx))&&COPILOT_QUOTA.some(has(idx))},
+   build:function(idx,data){return copilotBuild(idx,data,COPILOT_USEFUL)}},
+  {id:"copilot-ai",name:"GitHub AI usage report",vendor:"copilot",unit:"AI credits",
    detect:function(idx){
-     return COPILOT_REQUIRED.every(function(c){return c in idx})&&
-       ["aic_quantity","total_monthly_quota","exceeds_quota"].some(function(c){return c in idx});
+     return COPILOT_REQUIRED.every(has(idx))&&("model" in idx)&&COPILOT_TOKENS.some(has(idx));
    },
-   build:function(idx){
-     var m=base();
-     m.member=idx.username; m.amount=idx.quantity;
-     m.date=ix(idx,"date"); m.allowance=ix(idx,"total_monthly_quota"); m.model=ix(idx,"model");
-     m.amountCols=[];
-     if("aic_quantity" in idx)m.amountCols.push({name:"aic_quantity",col:idx.aic_quantity});
-     m.amountCols.push({name:"quantity",col:idx.quantity});
-     if("net_amount" in idx)m.dollars={col:idx.net_amount,name:"net_amount"};
-     m.skip=function(g){
-       if("product" in idx){var p=g(idx.product).toLowerCase();
-         if(p&&p.indexOf("copilot")===-1)return "product not Copilot"}
-       return null;
-     };
-     /* credits: prefer the explicit AI-credit column; else quantity when the row
-        is denominated in credits. Request-denominated rows are counted
-        separately and never silently added to a credit total. */
-     m.rowAmount=function(g,acc){
-       var aic=("aic_quantity" in idx)?g(idx.aic_quantity):"";
-       if(aic!=="")return parseNum(aic).n||0;
-       if(g(idx.unit_type).toLowerCase().indexOf("credit")!==-1)return parseNum(g(idx.quantity)).n||0;
-       acc.requests=(acc.requests||0)+(parseNum(g(idx.quantity)).n||0);
-       return 0;
-     };
-     m.extras=function(acc){
-       return acc.requests?[["Request-metered units",fmtInt(acc.requests),"counted separately, never added to credits"]]:[];
-     };
-     m.missing=COPILOT_USEFUL.filter(function(c){return !(c in idx)});
-     m.described="Read as: username as the member; AI credits from aic_quantity, or from "+
-       "quantity on rows denominated in credits, as the amount; total_monthly_quota as the "+
-       "allowance; model and date; and net_amount as the file's own dollar figure. Rows whose "+
-       "product is not Copilot are set aside, and request-metered rows are counted separately.";
-     return m;
-   }},
+   build:function(idx,data){return copilotBuild(idx,data,COPILOT_AI_USEFUL)}},
   {id:"claude",name:"Claude spend report",vendor:"claude",unit:"USD",
    detect:function(idx){
      return alias(idx,CLAUDE_ALIASES.user)>=0&&alias(idx,CLAUDE_ALIASES.net)>=0&&
@@ -504,11 +596,12 @@ var PRESELECT={
   member:["member","member email","user email","email","user","username","user name","login",
           "member name","user id","member id","account","person","developer","name"],
   amount:["amount","credits","credits spent","credits used","credit usage","spend","spend cents",
-          "total spend","total spend cents","on demand spend cents","usage","usage credits",
+          "total spend","total spend cents","on demand spend","on demand spend cents","on demand usage",
+          "usage based spend","included usage","usage","usage credits",
           "cost","total cost","net spend","net amount","total","tokens","total tokens",
           "quantity","messages","messages sent","requests"],
-  date:["date","day","period","month","week","timestamp","time","usage date"],
-  allowance:["allowance","included allowance","included usage","limit","spend limit","quota",
+  date:["date","day","period","period start","start date","month","week","timestamp","time","usage date"],
+  allowance:["allowance","included allowance","limit","spend limit","quota",
              "monthly quota","budget","included","included credits","monthly limit"],
   product:["product","surface","feature","client","product surface","tool","sku"],
   model:["model","model name"],
@@ -599,7 +692,7 @@ function recompute(focus){
   var idx=idxOf(head),keys=head.map(hkey);
   if(!overrideWrong){
     for(var w=0;w<WRONG.length;w++){
-      if(WRONG[w].test(idx,keys)){problem(WRONG[w].message,true);return}
+      if(WRONG[w].test(idx,keys,head)){problem(WRONG[w].message,true);return}
     }
   }
   preset=null;
@@ -611,8 +704,8 @@ function recompute(focus){
   } else {
     for(var p=0;p<PRESETS.length;p++){if(PRESETS[p].detect(idx)){preset=PRESETS[p];break}}
     if(preset){
-      mapping=preset.build(idx);mapping.presetName=preset.name;
-      if(!touched.unit)$("#unit").value=preset.unit;
+      mapping=preset.build(idx,data);mapping.presetName=preset.name;
+      if(!touched.unit)$("#unit").value=mapping.unit||preset.unit;
       if(!touched.vendor)$("#vendor").value=preset.vendor;
     } else if(confirmed[head.join("")]){
       mapping=confirmed[head.join("")];
@@ -764,7 +857,7 @@ function dateRange(dates){
 function analyze(head,data,m,inp){
   var get=function(row,i){return (i>=0&&i<row.length)?String(row[i]).trim():""};
   var members={},list=[],products={},models={},seats={},dates=[];
-  var acc={requests:0,setAside:{},noMember:0,blank:0,rowsUsed:0};
+  var acc={requests:0,setAside:{},noMember:0,blank:0,markers:{},rowsUsed:0};
   data.forEach(function(row){
     if(row.length===1&&row[0]==="")return;
     var g=function(i){return get(row,i)};
@@ -781,12 +874,19 @@ function analyze(head,data,m,inp){
     if(!name){acc.noMember++;return}
     var amt;
     if(m.rowAmount)amt=m.rowAmount(g,acc);
-    else{var p=parseNum(g(m.amount));if(p.empty){acc.blank++;amt=0}else amt=p.n}
+    else{
+      var p=parseNum(g(m.amount));
+      if(p.empty){acc.blank++;amt=0}
+      else{
+        amt=p.n;
+        if(p.marker){var mk=p.marker.toLowerCase();(acc.markers[mk]||(acc.markers[mk]={text:p.marker,n:0})).n++}
+      }
+    }
     var mm=members[name];
     if(!mm){mm=members[name]={name:name,amount:0,dollars:0,allowance:0,seat:"",rows:0};list.push(mm)}
     mm.amount+=amt;mm.rows++;
     if(m.dollars){var d=parseNum(g(m.dollars.col));if(!d.fail&&!d.empty)mm.dollars+=d.n}
-    if(m.allowance>=0){var a=parseNum(g(m.allowance));if(!a.fail&&!a.empty&&a.n>mm.allowance)mm.allowance=a.n}
+    if(m.allowance>=0&&(!m.rowAllowance||m.rowAllowance(g))){var a=parseNum(g(m.allowance));if(!a.fail&&!a.empty&&a.n>mm.allowance)mm.allowance=a.n}
     if(m.seat>=0&&!mm.seat)mm.seat=g(m.seat);
     if(m.product>=0){var pr=g(m.product)||"(unspecified)";products[pr]=(products[pr]||0)+amt}
     if(m.model>=0){var mo=g(m.model)||"(unspecified)";models[mo]=(models[mo]||0)+amt}
@@ -945,6 +1045,10 @@ function render(focus){
   });
   if(a.acc.noMember)notes.push(fmtInt(a.acc.noMember)+' '+plural(a.acc.noMember,"row")+' with no member skipped');
   if(a.acc.blank)notes.push(fmtInt(a.acc.blank)+' blank amount '+plural(a.acc.blank,"cell")+' read as zero');
+  Object.keys(a.acc.markers).forEach(function(k){
+    var mk=a.acc.markers[k];
+    notes.push(fmtInt(mk.n)+' amount '+plural(mk.n,"cell")+' reading "'+esc(mk.text)+'" read as zero');
+  });
   if(dupCount)notes.push(fmtInt(dupCount)+' duplicate '+plural(dupCount,"row")+' across files counted each time');
   h+='<p class="note" style="margin-top:.7rem">'+notes.join('; ')+'.</p>';
   if(inp.unitBlank&&!inp.isUSD)h+='<p class="note">The amount column has no unit label yet. Type one above, '+
@@ -1066,6 +1170,7 @@ function summaryText(inp){
   L.push("Unit: "+inp.unit+"; dollars: "+(a.dol.mode==="usd"?"the amount is in dollars":(a.dol.mode?a.dol.source:"none")));
   var rowNotes=["rows used: "+fmtInt(a.acc.rowsUsed),"rows without a member: "+fmtInt(a.acc.noMember),
     "blank amount cells read as zero: "+fmtInt(a.acc.blank)];
+  Object.keys(a.acc.markers).forEach(function(k){var mk=a.acc.markers[k];rowNotes.push('amount cells reading "'+mk.text+'" read as zero: '+fmtInt(mk.n))});
   Object.keys(a.acc.setAside).forEach(function(why){var n=a.acc.setAside[why].rows;rowNotes.push(fmtInt(n)+" "+plural(n,"row")+" set aside ("+why+")")});
   L.push("Rows: "+rowNotes.join("; "));
   L.push("Members: "+fmtInt(a.count)+"; total: "+AU(a.total)+(a.dollarsTotal!=null?" ("+usd(a.dollarsTotal)+")":"")+

@@ -1,0 +1,4 @@
+Date,Email,Is Active,Chat Suggested Lines Added,Chat Suggested Lines Deleted,Chat Accepted Lines Added,Chat Accepted Lines Deleted,Chat Tabs Shown,Tabs Accepted,Ask Requests,Edit Requests,Agent Requests,Chat Total Applies,Chat Total Accepts,Client Version
+2025-09-08T00:00:00.000Z,dev-001@example.com,TRUE,500,20,300,10,200,120,4,2,25,5,4,1.5.9
+2025-09-08T00:00:00.000Z,dev-002@example.com,FALSE,0,0,0,0,0,0,0,0,0,0,0,
+2025-09-09T00:00:00.000Z,dev-001@example.com,TRUE,320,8,210,6,150,95,2,1,15,3,3,1.5.9

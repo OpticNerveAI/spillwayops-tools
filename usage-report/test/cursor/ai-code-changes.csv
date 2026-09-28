@@ -1,0 +1,2 @@
+change_id,user_id,user_email,source,model,total_lines_added,total_lines_deleted,created_at,metadata_json
+chg-0001,user_0000000000000000000001,dev-001@example.com,COMPOSER,claude-sonnet-5,40,3,2026-09-02T14:12:03.000Z,"{""fileExtension"":""ts""}"

@@ -1,0 +1,4 @@
+Name,Email,Seat type,Credits spent,Messages sent
+dev-001,dev-001@example.com,Codex,1200,340
+dev-002,dev-002@example.com,ChatGPT,0,12
+dev-003,dev-003@example.com,Codex,"4,500",900
