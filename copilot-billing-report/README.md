@@ -31,6 +31,15 @@ makes no network requests of any kind — there is no script, font, or styleshee
 loaded from anywhere, so this is verifiable by opening the network tab or by
 reading the single file.
 
+## Live figures without the CSV
+
+The same report is available free as a GitHub App that reads the figures live
+from GitHub's own APIs instead of a CSV export:
+[copilot-usage.app.spillwayops.com](https://copilot-usage.app.spillwayops.com/).
+An organization owner installs it, viewers sign in with GitHub, and public
+sample reports need no sign-in. This CSV tool remains supported for the
+no-account path.
+
 ## Getting the CSV
 
 An organization owner or billing manager can download it from GitHub without an
